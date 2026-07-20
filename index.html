@@ -1,1 +1,505 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Refuges en bus — depuis Grenoble</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #EFEDE3;
+    --bg-panel: #F8F7F0;
+    --ink: #1E2A1F;
+    --ink-soft: #4A5A48;
+    --pine: #2E4A34;
+    --pine-deep: #1B2F20;
+    --lake: #2B5C6B;
+    --lake-soft: #DCEAEC;
+    --trail: #8A6B3C;
+    --trail-soft: #EFE3CC;
+    --line: #CFC9B4;
+    --white: #FFFFFF;
+    --easy: #4C7A52;
+    --moderate: #A9762F;
+    --hard: #A3462F;
+    --shadow: 0 2px 14px rgba(30,42,31,0.08);
+  }
 
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- Contour texture backdrop ---------- */
+  .contour-bg{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    opacity:0.5;
+  }
+
+  .wrap{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:0 24px 80px;}
+
+  /* ---------- Header ---------- */
+  header{
+    padding:56px 0 32px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:32px;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--lake);
+    margin:0 0 14px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:22px; height:1px; background:var(--lake);
+    display:inline-block;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-optical-sizing:auto;
+    font-weight:600;
+    font-size:clamp(34px, 5vw, 54px);
+    line-height:1.05;
+    margin:0 0 16px;
+    color:var(--pine-deep);
+    letter-spacing:-0.01em;
+  }
+  h1 em{
+    font-style:italic;
+    font-weight:400;
+    color:var(--lake);
+  }
+  .subhead{
+    max-width:620px;
+    color:var(--ink-soft);
+    font-size:16px;
+    margin:0;
+  }
+
+  /* ---------- Filter bar ---------- */
+  .filters{
+    position:sticky; top:0; z-index:5;
+    background:rgba(239,237,227,0.92);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+    padding:16px 0;
+    margin-bottom:36px;
+  }
+  .filters-inner{
+    display:flex; flex-wrap:wrap; gap:22px; align-items:flex-end;
+  }
+  .filter-group{display:flex; flex-direction:column; gap:6px;}
+  .filter-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+  select, .chip-row{
+    font-family:'Work Sans', sans-serif;
+    font-size:14px;
+  }
+  select{
+    padding:9px 34px 9px 12px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--white) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="6"><path d="M0 0L5 6L10 0" stroke="%234A5A48" fill="none" stroke-width="1.4"/></svg>') no-repeat right 12px center;
+    color:var(--ink);
+    min-width:170px;
+    cursor:pointer;
+  }
+  select:focus-visible, button:focus-visible, .card:focus-visible{
+    outline:2px solid var(--lake); outline-offset:2px;
+  }
+  .chip-row{display:flex; gap:8px; flex-wrap:wrap;}
+  .chip{
+    padding:8px 14px;
+    border-radius:20px;
+    border:1px solid var(--line);
+    background:var(--white);
+    color:var(--ink-soft);
+    cursor:pointer;
+    font-size:13.5px;
+    transition:all .15s ease;
+  }
+  .chip.active{
+    background:var(--pine); border-color:var(--pine); color:var(--white);
+  }
+  .reset-btn{
+    margin-left:auto;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px; letter-spacing:0.04em;
+    background:none; border:1px solid var(--line); border-radius:8px;
+    padding:9px 14px; color:var(--ink-soft); cursor:pointer;
+    align-self:flex-end;
+  }
+  .reset-btn:hover{border-color:var(--lake); color:var(--lake);}
+
+  .result-count{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px; color:var(--ink-soft);
+    margin:0 0 20px;
+  }
+  .result-count strong{color:var(--pine-deep);}
+
+  /* ---------- Cards grid ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(340px, 1fr));
+    gap:22px;
+  }
+
+  .card{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+    cursor:pointer;
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .card:hover{transform:translateY(-3px); box-shadow:0 8px 24px rgba(30,42,31,0.14);}
+
+  .card-profile{
+    height:64px; width:100%; display:block;
+    background:linear-gradient(180deg, var(--lake-soft), transparent);
+  }
+
+  .card-body{padding:20px 22px 22px;}
+  .card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:8px;}
+  .card-massif{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px; text-transform:uppercase; letter-spacing:0.08em;
+    color:var(--trail);
+  }
+  .card-alt{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px; color:var(--ink-soft);
+  }
+  .card-title{
+    font-family:'Fraunces', serif;
+    font-weight:600; font-size:22px;
+    color:var(--pine-deep);
+    margin:0 0 12px;
+    line-height:1.15;
+  }
+  .badges{display:flex; flex-wrap:wrap; gap:7px; margin-bottom:16px;}
+  .badge{
+    font-size:11.5px; padding:4px 10px; border-radius:20px;
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .badge.level-facile{background:#E5EFE3; color:var(--easy);}
+  .badge.level-modere{background:#F4E9D6; color:var(--moderate);}
+  .badge.level-sportif, .badge.level-difficile{background:#F5E1DA; color:var(--hard);}
+  .badge.transport-direct{background:var(--lake-soft); color:var(--lake);}
+  .badge.transport-correspondance{background:#EEE9DD; color:var(--ink-soft);}
+  .badge.open-now{background:var(--pine); color:var(--white);}
+  .badge.closed-now{background:#E7E3D4; color:var(--ink-soft);}
+
+  .card-facts{
+    display:grid; grid-template-columns:1fr 1fr; gap:10px 16px;
+    padding:14px 0 6px; border-top:1px dashed var(--line);
+  }
+  .bus-facts{
+    display:grid; grid-template-columns:1fr 1fr; gap:10px 16px;
+    padding-bottom:14px;
+  }
+  .day-facts{
+    display:grid; grid-template-columns:1fr 1fr; gap:12px;
+    padding-bottom:14px;
+  }
+  .day-fact-col{
+    display:flex; flex-direction:column; gap:3px;
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px 12px;
+  }
+  .day-fact-tag{
+    font-family:'IBM Plex Mono', monospace; font-size:10px; text-transform:uppercase;
+    letter-spacing:0.06em; color:var(--trail); margin-bottom:2px;
+  }
+  .day-fact-col .fact-val{font-size:16px; font-weight:600;}
+  .dplus, .dminus{
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px;
+    display:inline-block; margin-right:10px;
+  }
+  .dplus{color:var(--easy);}
+  .dminus{color:var(--hard);}
+  .duree-val{
+    font-family:'IBM Plex Mono', monospace; font-size:12px;
+    color:var(--ink-soft); display:block; margin-top:4px;
+  }
+  .duree-moyenne{
+    font-size:13.5px; color:var(--ink); margin:0 0 12px;
+    background:var(--lake-soft); padding:8px 12px; border-radius:8px;
+  }
+  .duree-moyenne strong{color:var(--lake); font-family:'IBM Plex Mono', monospace;}
+  .front-links{margin-bottom:12px;}
+  .link-btn.gpx-front{
+    font-size:12.5px; padding:7px 12px;
+    background:var(--white); border:1px solid var(--trail);
+    color:var(--trail);
+  }
+  .link-btn.gpx-front:hover{background:var(--trail); color:var(--white);}
+  .fact-label{
+    font-family:'IBM Plex Mono', monospace; font-size:10px;
+    text-transform:uppercase; letter-spacing:0.06em; color:var(--ink-soft);
+    display:block; margin-bottom:2px;
+  }
+  .fact-val{font-size:14.5px; color:var(--ink); font-weight:500;}
+  .fact-val.mono{font-family:'IBM Plex Mono', monospace; font-size:14px;}
+
+  .card-cta{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-top:6px;
+  }
+  .price-tag{
+    font-family:'Fraunces', serif; font-weight:600; font-size:19px; color:var(--pine-deep);
+  }
+  .price-tag span{font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-soft); font-weight:400;}
+  .expand-hint{
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--lake);
+  }
+
+  /* ---------- Detail panel ---------- */
+  .detail{
+    display:none;
+    padding:0 22px 22px;
+    border-top:1px solid var(--line);
+    margin-top:2px;
+  }
+  .card.open .detail{display:block;}
+  .card.open{grid-column: span 1;}
+  .detail-section{padding-top:16px;}
+  .detail-section + .detail-section{border-top:1px dashed var(--line); margin-top:16px;}
+  .detail-h{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; text-transform:uppercase;
+    letter-spacing:0.08em; color:var(--trail); margin:0 0 10px;
+  }
+  .day-block{display:flex; gap:12px; margin-bottom:10px; font-size:14px;}
+  .day-tag{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--white);
+    background:var(--pine); border-radius:5px; padding:2px 7px; height:fit-content; white-space:nowrap;
+  }
+  .links-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;}
+  .link-btn{
+    font-family:'Work Sans', sans-serif; font-size:13px; font-weight:500;
+    text-decoration:none; padding:9px 14px; border-radius:8px;
+    display:inline-flex; align-items:center; gap:6px;
+    border:1px solid var(--line);
+    color:var(--ink);
+    background:var(--white);
+    transition:all .15s ease;
+  }
+  .link-btn:hover{border-color:var(--lake); color:var(--lake);}
+  .link-btn.primary{background:var(--pine); border-color:var(--pine); color:var(--white);}
+  .link-btn.primary:hover{background:var(--pine-deep); border-color:var(--pine-deep); color:var(--white);}
+  .note{
+    font-size:13px; color:var(--ink-soft); background:var(--trail-soft);
+    padding:10px 12px; border-radius:8px; margin-top:10px;
+  }
+
+  .empty-state{
+    text-align:center; padding:70px 20px; color:var(--ink-soft);
+    font-family:'Fraunces', serif; font-size:20px;
+  }
+
+  footer{
+    margin-top:56px; padding-top:24px; border-top:1px solid var(--line);
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--ink-soft);
+  }
+
+  @media (max-width:640px){
+    .filters-inner{gap:14px;}
+    select{min-width:140px;}
+    .reset-btn{margin-left:0;}
+  }
+</style>
+</head>
+<body>
+
+<svg class="contour-bg" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" preserveAspectRatio="none">
+  <defs>
+    <pattern id="contours" width="900" height="600" patternUnits="userSpaceOnUse">
+      <path d="M0,500 Q150,420 300,470 T600,440 T900,480" fill="none" stroke="#DAD5C0" stroke-width="1"/>
+      <path d="M0,540 Q150,460 300,510 T600,480 T900,520" fill="none" stroke="#DAD5C0" stroke-width="1"/>
+      <path d="M0,580 Q150,500 300,550 T600,520 T900,560" fill="none" stroke="#DAD5C0" stroke-width="1"/>
+      <path d="M-50,150 Q100,80 250,130 T550,100 T900,140" fill="none" stroke="#DAD5C0" stroke-width="1"/>
+      <path d="M-50,190 Q100,120 250,170 T550,140 T900,180" fill="none" stroke="#DAD5C0" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#contours)"/>
+</svg>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Grenoble → montagne, sans voiture</p>
+    <h1>Randos avec <em>refuge gardé</em>,<br>accessibles en bus</h1>
+    <p class="subhead">5 refuges du Vercors, de Belledonne et de l'Oisans, joignables en transport en commun depuis la gare routière de Grenoble.</p>
+  </header>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    Dernière vérification des horaires et tarifs : juillet 2026 · Les horaires de bus changent à la rentrée scolaire (sept. 2026), à revérifier sur carsisere.auvergnerhonealpes.fr avant de partir.
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+// ============================================
+// Connexion Supabase — remplace ces 2 valeurs
+// (Project Settings → API dans ton dashboard Supabase)
+// ============================================
+const SUPABASE_URL = 'https://TON-PROJET.supabase.co';
+const SUPABASE_ANON_KEY = 'TA_CLE_ANON_PUBLIC';
+
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let REFUGES = [];
+
+async function loadRefuges(){
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '<p style="font-family:\'IBM Plex Mono\',monospace;color:var(--ink-soft);padding:40px 0;">Chargement des refuges…</p>';
+
+  const { data, error } = await supabaseClient.from('refuges').select('*');
+
+  if(error){
+    grid.innerHTML = `<p style="font-family:'IBM Plex Mono',monospace;color:var(--hard);padding:40px 0;">Erreur de chargement : ${error.message}<br>Vérifie SUPABASE_URL / SUPABASE_ANON_KEY et que la table "refuges" existe.</p>`;
+    console.error(error);
+    return;
+  }
+
+  // Adapte les noms de colonnes SQL (snake_case) au format attendu par les cartes
+  REFUGES = data.map(r => ({
+    id: r.id, nom: r.nom, massif: r.massif, altitude: r.altitude, niveau: r.niveau,
+    transport: r.transport, prix: r.prix, prixLabel: r.prix_label,
+    ouverture: { debut: r.ouverture_debut, fin: r.ouverture_fin },
+    ligne: r.ligne, arret: r.arret, busAller: r.bus_aller, busRetour: r.bus_retour,
+    j1km: r.j1_km, j1dplus: r.j1_dplus, j1dminus: r.j1_dminus, j1duree: r.j1_duree, j1: r.j1_texte,
+    j2km: r.j2_km, j2dplus: r.j2_dplus, j2dminus: r.j2_dminus, j2duree: r.j2_duree, j2: r.j2_texte,
+    dureeMoyenne: r.duree_moyenne, note: r.note,
+    gpx: r.gpx_url, gpxLabel: r.gpx_label,
+    resaRefuge: r.resa_refuge_url, resaRefugeLabel: r.resa_refuge_label,
+    resaTransport: r.resa_transport_url, resaTransportLabel: r.resa_transport_label,
+    ficheHoraire: r.fiche_horaire_url,
+  }));
+
+  render();
+}
+
+
+function fmtDate(iso){
+  const [y,m,d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+let openId = null;
+
+function render(){
+  const grid = document.getElementById('grid');
+  grid.innerHTML = REFUGES.map(r => cardHTML(r)).join('');
+
+  REFUGES.forEach(r=>{
+    const el = document.getElementById('card-'+r.id);
+    if(el){
+      el.addEventListener('click', ()=>{
+        openId = (openId === r.id) ? null : r.id;
+        render();
+      });
+      el.setAttribute('tabindex','0');
+      el.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); el.click(); }
+      });
+    }
+  });
+}
+
+function cardHTML(r){
+  const isExpanded = openId === r.id;
+  return `
+  <div class="card ${isExpanded ? 'open' : ''}" id="card-${r.id}">
+    <svg class="card-profile" viewBox="0 0 400 64" preserveAspectRatio="none">
+      <polyline points="0,50 60,30 110,42 170,14 230,36 300,20 360,38 400,26" fill="none" stroke="#2B5C6B" stroke-width="2" opacity="0.55"/>
+    </svg>
+    <div class="card-body">
+      <div class="card-top">
+        <span class="card-massif">${r.massif}</span>
+        <span class="card-alt">${r.altitude}</span>
+      </div>
+      <h3 class="card-title">${r.nom}</h3>
+      <div class="card-facts">
+        <div><span class="fact-label">Ligne</span><span class="fact-val mono">${r.ligne}</span></div>
+        <div><span class="fact-label">Arrêt</span><span class="fact-val">${r.arret}</span></div>
+      </div>
+      <div class="bus-facts">
+        <div><span class="fact-label">Bus aller</span><span class="fact-val mono">${r.busAller}</span></div>
+        <div><span class="fact-label">Bus retour</span><span class="fact-val mono">${r.busRetour}</span></div>
+      </div>
+      <div class="day-facts">
+        <div class="day-fact-col">
+          <span class="day-fact-tag">Jour 1</span>
+          <span class="fact-val mono">${r.j1km}</span>
+          <span class="dplus">▲ ${r.j1dplus}</span><span class="dminus">▼ ${r.j1dminus}</span>
+          <span class="duree-val">⏱ ${r.j1duree}</span>
+        </div>
+        <div class="day-fact-col">
+          <span class="day-fact-tag">Jour 2</span>
+          <span class="fact-val mono">${r.j2km}</span>
+          <span class="dplus">▲ ${r.j2dplus}</span><span class="dminus">▼ ${r.j2dminus}</span>
+          <span class="duree-val">⏱ ${r.j2duree}</span>
+        </div>
+      </div>
+      <div class="front-links">
+        ${r.gpx ? `<a class="link-btn gpx-front" href="${r.gpx}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🗺️ ${r.gpxLabel}</a>` : ''}
+      </div>
+      <div class="card-cta">
+        <div class="price-tag">${r.prixLabel}<br><span>demi-pension /pers.</span></div>
+        <span class="expand-hint">${isExpanded ? '▲ replier' : '▼ voir le détail'}</span>
+      </div>
+    </div>
+    <div class="detail">
+      <div class="detail-section">
+        <p class="detail-h">Refuge</p>
+        <p class="fact-val" style="font-size:18px;">${r.nom}</p>
+      </div>
+      <div class="detail-section">
+        <p class="detail-h">Itinéraire — week-end 2 jours</p>
+        <div class="day-block"><span class="day-tag">J1</span><span>${r.j1}</span></div>
+        <div class="day-block"><span class="day-tag">J2</span><span>${r.j2}</span></div>
+      </div>
+      <div class="detail-section">
+        <p class="detail-h">Ouverture du refuge (2026)</p>
+        <span class="fact-val mono">${fmtDate(r.ouverture.debut)} → ${fmtDate(r.ouverture.fin)}</span>
+        <p class="note">${r.note}</p>
+      </div>
+      <div class="detail-section">
+        <p class="detail-h">Réservations & horaires</p>
+        <div class="links-row">
+          <a class="link-btn primary" href="${r.resaRefuge}" target="_blank" rel="noopener">🏔 ${r.resaRefugeLabel}</a>
+          <a class="link-btn" href="${r.resaTransport}" target="_blank" rel="noopener">🚌 ${r.resaTransportLabel}</a>
+          <a class="link-btn" href="${r.ficheHoraire}" target="_blank" rel="noopener">📄 Fiche horaire ${r.ligne.split(' ')[0]}</a>
+          ${r.gpx ? `<a class="link-btn" href="${r.gpx}" target="_blank" rel="noopener">🗺️ ${r.gpxLabel}</a>` : ''}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+loadRefuges();
+</script>
+
+</body>
+</html>
