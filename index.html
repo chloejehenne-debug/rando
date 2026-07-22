@@ -70,6 +70,33 @@
   }
   .legend-dot{width:10px; height:10px; border-radius:50%; display:inline-block;}
 
+  .filters{
+    display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end;
+    padding:16px 0 24px; margin-bottom:8px; border-bottom:1px solid var(--line);
+  }
+  .filter-group{display:flex; flex-direction:column; gap:6px;}
+  .filter-label{
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.07em;
+    text-transform:uppercase; color:var(--ink-soft);
+  }
+  .filter-select{
+    font-family:'Work Sans', sans-serif; font-size:14px; color:var(--ink);
+    padding:9px 32px 9px 12px; border-radius:9px; border:1.5px solid var(--line);
+    background:#fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="6"><path d="M0 0L5 6L10 0" stroke="%235C6B62" fill="none" stroke-width="1.4"/></svg>') no-repeat right 12px center;
+    min-width:160px; cursor:pointer;
+  }
+  .filter-select:focus-visible{outline:2px solid var(--sec-transport); outline-offset:2px;}
+  .filter-reset{
+    font-family:'IBM Plex Mono', monospace; font-size:12px;
+    background:none; border:1.5px solid var(--line); border-radius:9px;
+    padding:9px 14px; color:var(--ink-soft); cursor:pointer; margin-left:auto;
+  }
+  .filter-reset:hover{border-color:var(--sec-refuge); color:var(--sec-refuge);}
+  .empty-state{
+    text-align:center; padding:60px 20px; color:var(--ink-soft);
+    font-family:'Fraunces', serif; font-size:19px;
+  }
+
   .grid{
     display:grid;
     grid-template-columns:repeat(auto-fill, minmax(370px, 1fr));
@@ -242,7 +269,32 @@
     </div>
   </header>
 
+  <div class="filters" id="filters" style="display:none;">
+    <div class="filter-group">
+      <label class="filter-label">Massif</label>
+      <select class="filter-select" id="f-massif" onchange="applyFilters()">
+        <option value="all">Tous</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label class="filter-label">Heure de départ</label>
+      <select class="filter-select" id="f-heure" onchange="applyFilters()">
+        <option value="all">Toutes</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label class="filter-label">Refuge</label>
+      <select class="filter-select" id="f-refuge" onchange="applyFilters()">
+        <option value="all">Tous</option>
+      </select>
+    </div>
+    <button class="filter-reset" onclick="resetFilters()">Réinitialiser</button>
+  </div>
+
+  <p class="result-count" id="result-count" style="display:none; font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--ink-soft); margin:0 0 18px;"></p>
+
   <div class="grid" id="grid"></div>
+  <div class="empty-state" id="empty-state" style="display:none;">Aucun refuge ne correspond à ces filtres.</div>
 
   <footer>
     Dernière vérification des horaires et tarifs : juillet 2026 · Horaires T64/T65/T66 valables jusqu'au 31/08/2026 (nouvelle grille de rentrée à revérifier) · Trains Lyon↔Grenoble : ~1 train/heure le week-end, à confirmer sur SNCF Connect le jour J.
@@ -336,10 +388,14 @@ async function loadRefuges(){
         j2: {km: it.j2_km, dplus: it.j2_dplus, dminus: it.j2_dminus, duree: it.j2_duree, texte: it.j2_texte},
         aller: mapTrajet(aller),
         retour: mapTrajet(retour),
+        heureBucket: extractHeureBucket(aller ? aller.heure_depart : ''),
       };
     });
 
-    render();
+    populateFilters();
+    document.getElementById('filters').style.display = 'flex';
+    document.getElementById('result-count').style.display = 'block';
+    applyFilters();
   } catch(err){
     grid.innerHTML = `<p style="font-family:'IBM Plex Mono',monospace;color:var(--hard);padding:40px 0;">Erreur de chargement : ${err.message || err}<br>Vérifie SUPABASE_URL / SUPABASE_ANON_KEY et que les 5 tables existent (refuges_info, itineraires, trajets, etapes, config).</p>`;
     console.error(err);
@@ -506,8 +562,55 @@ function cardHTML(r){
   </div>`;
 }
 
+let currentFiltered = [];
+
+function extractHeureBucket(heureStr){
+  if(!heureStr) return null;
+  const match = heureStr.match(/(\d{1,2})[:h]/);
+  if(!match) return null;
+  return parseInt(match[1], 10);
+}
+
+function populateFilters(){
+  const massifs = [...new Set(REFUGES.map(r => r.massif))].sort();
+  const heures = [...new Set(REFUGES.map(r => r.heureBucket).filter(h => h !== null))].sort((a,b)=>a-b);
+
+  const fMassif = document.getElementById('f-massif');
+  fMassif.innerHTML = '<option value="all">Tous</option>' + massifs.map(m => `<option value="${m}">${m}</option>`).join('');
+
+  const fHeure = document.getElementById('f-heure');
+  fHeure.innerHTML = '<option value="all">Toutes</option>' + heures.map(h => `<option value="${h}">Vers ${h}h</option>`).join('');
+
+  const fRefuge = document.getElementById('f-refuge');
+  fRefuge.innerHTML = '<option value="all">Tous</option>' + REFUGES.map(r => `<option value="${r.id}">${r.nom}</option>`).join('');
+}
+
+function applyFilters(){
+  const massif = document.getElementById('f-massif').value;
+  const heure = document.getElementById('f-heure').value;
+  const refuge = document.getElementById('f-refuge').value;
+
+  currentFiltered = REFUGES.filter(r => {
+    if(massif !== 'all' && r.massif !== massif) return false;
+    if(heure !== 'all' && String(r.heureBucket) !== heure) return false;
+    if(refuge !== 'all' && r.id !== refuge) return false;
+    return true;
+  });
+
+  document.getElementById('result-count').innerHTML = `<strong style="color:var(--ink)">${currentFiltered.length}</strong> refuge${currentFiltered.length>1?'s':''} affiché${currentFiltered.length>1?'s':''}`;
+  document.getElementById('empty-state').style.display = currentFiltered.length ? 'none' : 'block';
+  render();
+}
+
+function resetFilters(){
+  document.getElementById('f-massif').value = 'all';
+  document.getElementById('f-heure').value = 'all';
+  document.getElementById('f-refuge').value = 'all';
+  applyFilters();
+}
+
 function render(){
-  document.getElementById('grid').innerHTML = REFUGES.map(cardHTML).join('');
+  document.getElementById('grid').innerHTML = currentFiltered.map(cardHTML).join('');
 }
 
 loadRefuges();
