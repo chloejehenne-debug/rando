@@ -478,7 +478,7 @@ function computeTrajetTotal(planning){
   return {dur, prix, hasEstimation};
 }
 
-function planningHTML(planning, debutRando, resaUrl, resaLabel){
+function planningHTML(planning, debutRando, resaUrl, resaLabel, sensLabel){
   if(!planning) return '';
   const icons = {train:'🚆', bus:'🚌'};
   const ficheLabels = {train:'Horaires train', bus:'Horaires'};
@@ -499,14 +499,8 @@ function planningHTML(planning, debutRando, resaUrl, resaLabel){
     </div>`;
   }).join('');
 
-  const t = computeTrajetTotal(planning);
-  const totalBits = [];
-  if(t.dur!==null) totalBits.push(`⏱ <strong>${formatDuration(t.dur)}</strong>`);
-  if(t.prix !== null) totalBits.push(`💶 <strong>${t.prix.toFixed(2).replace('.',',')} €</strong>${t.hasEstimation ? ' (estimation)' : ''}`);
-  const totalLine = totalBits.length ? `<div class="plan-total">${totalBits.join(' &nbsp;·&nbsp; ')}</div>` : '';
-
   const goal = debutRando ? `<div class="plan-goal">🥾 Début de la rando : ${debutRando}</div>` : '';
-  return `${totalLine}<div class="planning">${steps}</div>${goal}`;
+  return `<div class="planning">${steps}</div>${goal}`;
 }
 
 function trajetBlock(t, tag){
@@ -594,7 +588,7 @@ function cardHTML(r){
               Détail du trajet aller <span class="dropdown-chevron">▾</span>
             </button>
             <div class="dropdown-content ${alOpen?'open':''}">
-              ${planningHTML(r.aller.planning, r.aller.debutRando, r.aller.resaUrl, r.aller.resaLabel)}
+              ${planningHTML(r.aller.planning, r.aller.debutRando, r.aller.resaUrl, r.aller.resaLabel, 'Aller simple')}
             </div>
           </div>
         </div>
@@ -606,7 +600,7 @@ function cardHTML(r){
               Détail du trajet retour <span class="dropdown-chevron">▾</span>
             </button>
             <div class="dropdown-content ${reOpen?'open':''}">
-              ${planningHTML(r.retour.planning, null, r.retour.resaUrl, r.retour.resaLabel)}
+              ${planningHTML(r.retour.planning, null, r.retour.resaUrl, r.retour.resaLabel, 'Retour')}
             </div>
           </div>
         </div>
