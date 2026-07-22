@@ -338,7 +338,7 @@ function mapTrajet(t){
     planning: etapesSorted.map(e => ({
       type: e.type, ligne: e.ligne, from: e.depuis, to: e.vers,
       depart: e.heure_depart, arrivee: e.heure_arrivee,
-      ficheUrl: e.fiche_url,
+      ficheUrl: e.fiche_url, prix: e.prix,
       showResa: resaLignes.includes(e.ligne)
     }))
   };
@@ -453,6 +453,13 @@ function stepDuration(depart, arrivee){
   return formatDuration(a - d);
 }
 
+function parsePrix(str){
+  if(!str) return null;
+  const m = str.match(/([\d,]+)\s*€/);
+  if(!m) return null;
+  return parseFloat(m[1].replace(',', '.'));
+}
+
 function planningHTML(planning, debutRando, resaUrl, resaLabel){
   if(!planning) return '';
   const icons = {train:'🚆', bus:'🚌'};
@@ -464,7 +471,7 @@ function planningHTML(planning, debutRando, resaUrl, resaLabel){
       <span class="plan-icon">${icons[s.type]}</span>
       <div class="plan-body">
         <div class="plan-route">${s.from} → ${s.to}</div>
-        <div class="plan-ligne">${s.ligne}${dur ? ' · '+dur : ''}</div>
+        <div class="plan-ligne">${s.ligne}${dur ? ' · '+dur : ''}${s.prix ? ' · '+s.prix : ''}</div>
         <div class="plan-step-links">
           ${s.ficheUrl ? `<a class="dd-link-mini" href="${s.ficheUrl}" target="_blank" rel="noopener">📄 ${ficheLabels[s.type]}${s.type==='bus' ? ' ('+s.ligne+')' : ''}</a>` : ''}
           ${s.showResa && resaUrl ? `<a class="dd-link-mini" href="${resaUrl}" target="_blank" rel="noopener">🎫 ${resaLabel}</a>` : ''}
@@ -477,7 +484,15 @@ function planningHTML(planning, debutRando, resaUrl, resaLabel){
   const firstDep = planning[0] ? parseTimeMinutes(planning[0].depart) : null;
   const lastArr = planning.length ? parseTimeMinutes(planning[planning.length-1].arrivee) : null;
   const totalDur = (firstDep!==null && lastArr!==null) ? formatDuration(lastArr - firstDep) : null;
-  const totalLine = totalDur ? `<div class="plan-total">⏱ Durée totale du trajet : <strong>${totalDur}</strong></div>` : '';
+
+  const prixValues = planning.map(s => parsePrix(s.prix)).filter(v => v !== null);
+  const hasEstimation = planning.some(s => s.prix && s.prix.includes('estimation'));
+  const totalPrix = prixValues.length ? prixValues.reduce((a,b)=>a+b, 0) : null;
+
+  const totalBits = [];
+  if(totalDur) totalBits.push(`⏱ <strong>${totalDur}</strong>`);
+  if(totalPrix !== null) totalBits.push(`💶 <strong>${totalPrix.toFixed(2).replace('.',',')} €</strong>${hasEstimation ? ' (estimation)' : ''}`);
+  const totalLine = totalBits.length ? `<div class="plan-total">${totalBits.join(' &nbsp;·&nbsp; ')}</div>` : '';
 
   const goal = debutRando ? `<div class="plan-goal">🥾 Début de la rando : ${debutRando}</div>` : '';
   return `${totalLine}<div class="planning">${steps}</div>${goal}`;
