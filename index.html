@@ -277,45 +277,58 @@ async function loadRefuges(){
   const grid = document.getElementById('grid');
   grid.innerHTML = '<p style="font-family:\'IBM Plex Mono\',monospace;color:var(--ink-soft);padding:40px 0;">Chargement des refuges…</p>';
 
-  const { data: configData } = await supabaseClient.from('config').select('*').eq('key','train_fiche_url').maybeSingle();
-  TRAIN_FICHE_URL = configData ? configData.value : '';
+  try {
+    const [refugesRes, itinerairesRes, trajetsRes, etapesRes, configRes] = await Promise.all([
+      supabaseClient.from('refuges_info').select('*'),
+      supabaseClient.from('itineraires').select('*'),
+      supabaseClient.from('trajets').select('*'),
+      supabaseClient.from('etapes').select('*'),
+      supabaseClient.from('config').select('*').eq('key','train_fiche_url').maybeSingle(),
+    ]);
 
-  const { data, error } = await supabaseClient
-    .from('itineraires')
-    .select(`
-      id, j1_km, j1_dplus, j1_dminus, j1_duree, j1_texte,
-      j2_km, j2_dplus, j2_dminus, j2_duree, j2_texte,
-      refuges_info ( id, nom, massif, altitude, adresse, maps_url, ouverture_debut, ouverture_fin, prix_demi_pension, specificites, fiche_url, fiche_label ),
-      trajets ( id, sens, depart, arrivee, heure_depart, heure_arrivee, detail, bus_fiche_url, bus_fiche_label, resa_url, resa_label, debut_rando, etapes ( ordre, type, ligne, depuis, vers, heure_depart, heure_arrivee ) )
-    `);
+    const firstError = refugesRes.error || itinerairesRes.error || trajetsRes.error || etapesRes.error;
+    if(firstError) throw firstError;
 
-  if(error){
-    grid.innerHTML = `<p style="font-family:'IBM Plex Mono',monospace;color:var(--hard);padding:40px 0;">Erreur de chargement : ${error.message}<br>Vérifie SUPABASE_URL / SUPABASE_ANON_KEY et que les tables existent.</p>`;
-    console.error(error);
-    return;
+    TRAIN_FICHE_URL = configRes.data ? configRes.data.value : '';
+
+    const refugesData = refugesRes.data || [];
+    const itinerairesData = itinerairesRes.data || [];
+    const trajetsData = trajetsRes.data || [];
+    const etapesData = etapesRes.data || [];
+
+    if(itinerairesData.length === 0){
+      grid.innerHTML = '<p style="font-family:\'IBM Plex Mono\',monospace;color:var(--ink-soft);padding:40px 0;">Aucun itinéraire trouvé — vérifie que supabase-seed-v3.sql a bien été exécuté.</p>';
+      return;
+    }
+
+    const attachEtapes = (t) => t ? {...t, etapes: etapesData.filter(e => e.trajet_id === t.id)} : null;
+
+    REFUGES = itinerairesData.map(it => {
+      const ri = refugesData.find(r => r.id === it.refuge_id);
+      const trajetsForIt = trajetsData.filter(t => t.itineraire_id === it.id);
+      const aller = attachEtapes(trajetsForIt.find(t => t.sens === 'aller'));
+      const retour = attachEtapes(trajetsForIt.find(t => t.sens === 'retour'));
+      return {
+        id: it.id,
+        nom: ri.nom, massif: ri.massif, altitude: ri.altitude,
+        adresse: ri.adresse, mapsUrl: ri.maps_url,
+        prixLabel: ri.prix_demi_pension,
+        ouvertureDebut: fmtDate(ri.ouverture_debut), ouvertureFin: fmtDate(ri.ouverture_fin),
+        specificites: ri.specificites,
+        ficheUrl: ri.fiche_url, ficheLabel: ri.fiche_label,
+        trainFicheUrl: TRAIN_FICHE_URL,
+        j1: {km: it.j1_km, dplus: it.j1_dplus, dminus: it.j1_dminus, duree: it.j1_duree, texte: it.j1_texte},
+        j2: {km: it.j2_km, dplus: it.j2_dplus, dminus: it.j2_dminus, duree: it.j2_duree, texte: it.j2_texte},
+        aller: mapTrajet(aller),
+        retour: mapTrajet(retour),
+      };
+    });
+
+    render();
+  } catch(err){
+    grid.innerHTML = `<p style="font-family:'IBM Plex Mono',monospace;color:var(--hard);padding:40px 0;">Erreur de chargement : ${err.message || err}<br>Vérifie SUPABASE_URL / SUPABASE_ANON_KEY et que les 5 tables existent (refuges_info, itineraires, trajets, etapes, config).</p>`;
+    console.error(err);
   }
-
-  REFUGES = data.map(it => {
-    const ri = it.refuges_info;
-    const aller = it.trajets.find(t => t.sens === 'aller');
-    const retour = it.trajets.find(t => t.sens === 'retour');
-    return {
-      id: it.id,
-      nom: ri.nom, massif: ri.massif, altitude: ri.altitude,
-      adresse: ri.adresse, mapsUrl: ri.maps_url,
-      prixLabel: ri.prix_demi_pension,
-      ouvertureDebut: fmtDate(ri.ouverture_debut), ouvertureFin: fmtDate(ri.ouverture_fin),
-      specificites: ri.specificites,
-      ficheUrl: ri.fiche_url, ficheLabel: ri.fiche_label,
-      trainFicheUrl: TRAIN_FICHE_URL,
-      j1: {km: it.j1_km, dplus: it.j1_dplus, dminus: it.j1_dminus, duree: it.j1_duree, texte: it.j1_texte},
-      j2: {km: it.j2_km, dplus: it.j2_dplus, dminus: it.j2_dminus, duree: it.j2_duree, texte: it.j2_texte},
-      aller: mapTrajet(aller),
-      retour: mapTrajet(retour),
-    };
-  });
-
-  render();
 }
 
 function fmtDate(iso){
