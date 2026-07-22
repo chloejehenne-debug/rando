@@ -3,27 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Refuges en bus — depuis Grenoble</title>
+<title>Refuges en bus — depuis Grenoble &amp; Lyon</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #EFEDE3;
-    --bg-panel: #F8F7F0;
-    --ink: #1E2A1F;
-    --ink-soft: #4A5A48;
-    --pine: #2E4A34;
-    --pine-deep: #1B2F20;
-    --lake: #2B5C6B;
-    --lake-soft: #DCEAEC;
-    --trail: #8A6B3C;
-    --trail-soft: #EFE3CC;
-    --line: #CFC9B4;
-    --white: #FFFFFF;
-    --easy: #4C7A52;
-    --moderate: #A9762F;
-    --hard: #A3462F;
-    --shadow: 0 2px 14px rgba(30,42,31,0.08);
+    --bg: #F5F6F0;
+    --card: #FFFFFF;
+    --ink: #1A2420;
+    --ink-soft: #5C6B62;
+    --line: #E1E4DA;
+
+    --vercors: #0F9D58;
+    --vercors-soft: #E3F6EC;
+    --belledonne: #7C3AED;
+    --belledonne-soft: #F0E9FE;
+    --oisans: #E8871E;
+    --oisans-soft: #FDECD8;
+
+    --sec-itineraire: #0E8F72;
+    --sec-itineraire-soft: #E1F5EF;
+    --sec-transport: #2563EB;
+    --sec-transport-soft: #E5EEFE;
+    --sec-refuge: #C2410C;
+    --sec-refuge-soft: #FDEBE1;
+
+    --shadow: 0 2px 16px rgba(26,36,32,0.07);
+    --shadow-hover: 0 10px 28px rgba(26,36,32,0.13);
   }
 
   *{box-sizing:border-box;}
@@ -36,469 +42,460 @@
     -webkit-font-smoothing:antialiased;
   }
 
-  /* ---------- Contour texture backdrop ---------- */
-  .contour-bg{
-    position:fixed; inset:0; z-index:0; pointer-events:none;
-    opacity:0.5;
-  }
+  .wrap{max-width:1200px; margin:0 auto; padding:0 24px 90px;}
 
-  .wrap{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:0 24px 80px;}
-
-  /* ---------- Header ---------- */
-  header{
-    padding:56px 0 32px;
-    border-bottom:1px solid var(--line);
-    margin-bottom:32px;
-  }
+  header{padding:52px 0 30px;}
   .eyebrow{
     font-family:'IBM Plex Mono', monospace;
-    font-size:12.5px;
-    letter-spacing:0.12em;
-    text-transform:uppercase;
-    color:var(--lake);
-    margin:0 0 14px;
+    font-size:12.5px; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--sec-transport); margin:0 0 14px;
     display:flex; align-items:center; gap:10px;
   }
-  .eyebrow::before{
-    content:"";
-    width:22px; height:1px; background:var(--lake);
-    display:inline-block;
-  }
+  .eyebrow::before{content:"●"; color:var(--vercors); font-size:10px;}
+  .eyebrow::after{content:"●"; color:var(--belledonne); font-size:10px;}
   h1{
-    font-family:'Fraunces', serif;
-    font-optical-sizing:auto;
-    font-weight:600;
-    font-size:clamp(34px, 5vw, 54px);
-    line-height:1.05;
-    margin:0 0 16px;
-    color:var(--pine-deep);
+    font-family:'Fraunces', serif; font-weight:700; font-optical-sizing:auto;
+    font-size:clamp(34px, 5vw, 56px); line-height:1.03; margin:0 0 16px;
     letter-spacing:-0.01em;
   }
-  h1 em{
-    font-style:italic;
-    font-weight:400;
-    color:var(--lake);
-  }
-  .subhead{
-    max-width:620px;
-    color:var(--ink-soft);
-    font-size:16px;
-    margin:0;
-  }
+  h1 .accent1{color:var(--vercors);}
+  h1 .accent2{color:var(--belledonne);}
+  h1 .accent3{color:var(--oisans);}
+  .subhead{max-width:640px; color:var(--ink-soft); font-size:16.5px; margin:0;}
 
-  /* ---------- Filter bar ---------- */
-  .filters{
-    position:sticky; top:0; z-index:5;
-    background:rgba(239,237,227,0.92);
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px);
-    border-bottom:1px solid var(--line);
-    padding:16px 0;
-    margin-bottom:36px;
+  .legend{display:flex; gap:18px; margin-top:22px; flex-wrap:wrap;}
+  .legend-item{
+    display:flex; align-items:center; gap:7px;
+    font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--ink-soft);
   }
-  .filters-inner{
-    display:flex; flex-wrap:wrap; gap:22px; align-items:flex-end;
-  }
-  .filter-group{display:flex; flex-direction:column; gap:6px;}
-  .filter-label{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase;
-    color:var(--ink-soft);
-  }
-  select, .chip-row{
-    font-family:'Work Sans', sans-serif;
-    font-size:14px;
-  }
-  select{
-    padding:9px 34px 9px 12px;
-    border-radius:8px;
-    border:1px solid var(--line);
-    background:var(--white) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="6"><path d="M0 0L5 6L10 0" stroke="%234A5A48" fill="none" stroke-width="1.4"/></svg>') no-repeat right 12px center;
-    color:var(--ink);
-    min-width:170px;
-    cursor:pointer;
-  }
-  select:focus-visible, button:focus-visible, .card:focus-visible{
-    outline:2px solid var(--lake); outline-offset:2px;
-  }
-  .chip-row{display:flex; gap:8px; flex-wrap:wrap;}
-  .chip{
-    padding:8px 14px;
-    border-radius:20px;
-    border:1px solid var(--line);
-    background:var(--white);
-    color:var(--ink-soft);
-    cursor:pointer;
-    font-size:13.5px;
-    transition:all .15s ease;
-  }
-  .chip.active{
-    background:var(--pine); border-color:var(--pine); color:var(--white);
-  }
-  .reset-btn{
-    margin-left:auto;
-    font-family:'IBM Plex Mono', monospace;
-    font-size:12px; letter-spacing:0.04em;
-    background:none; border:1px solid var(--line); border-radius:8px;
-    padding:9px 14px; color:var(--ink-soft); cursor:pointer;
-    align-self:flex-end;
-  }
-  .reset-btn:hover{border-color:var(--lake); color:var(--lake);}
+  .legend-dot{width:10px; height:10px; border-radius:50%; display:inline-block;}
 
-  .result-count{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:12.5px; color:var(--ink-soft);
-    margin:0 0 20px;
-  }
-  .result-count strong{color:var(--pine-deep);}
-
-  /* ---------- Cards grid ---------- */
   .grid{
     display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(340px, 1fr));
-    gap:22px;
+    grid-template-columns:repeat(auto-fill, minmax(370px, 1fr));
+    gap:26px;
   }
 
   .card{
-    background:var(--bg-panel);
-    border:1px solid var(--line);
+    background:var(--card);
+    border-radius:18px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    border-top:6px solid var(--massif-color);
+    transition:box-shadow .2s ease;
+  }
+  .card:hover{box-shadow:var(--shadow-hover);}
+
+  .card-head{padding:22px 24px 16px;}
+  .massif-badge{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:600;
+    text-transform:uppercase; letter-spacing:0.06em;
+    background:var(--massif-soft); color:var(--massif-color);
+    padding:5px 11px; border-radius:20px; margin-bottom:12px;
+  }
+  .massif-badge::before{content:"⛰"; font-size:11px;}
+  .card-title{
+    font-family:'Fraunces', serif; font-weight:700; font-size:24px;
+    color:var(--ink); margin:0 0 4px; line-height:1.15;
+  }
+  .card-alt{font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--ink-soft);}
+
+  .section{
+    margin:0 24px 18px;
+    border:1.5px solid var(--sec-line);
     border-radius:14px;
     overflow:hidden;
-    box-shadow:var(--shadow);
-    cursor:pointer;
-    transition:transform .18s ease, box-shadow .18s ease;
   }
-  .card:hover{transform:translateY(-3px); box-shadow:0 8px 24px rgba(30,42,31,0.14);}
+  .section-head{
+    background:var(--sec-soft);
+    padding:11px 16px;
+    display:flex; align-items:center; gap:9px;
+  }
+  .section-icon{
+    width:22px; height:22px; border-radius:7px;
+    background:var(--sec-color); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; flex-shrink:0;
+  }
+  .section-label{
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; font-weight:600;
+    text-transform:uppercase; letter-spacing:0.07em; color:var(--sec-color);
+  }
+  .section-body{padding:14px 16px 16px;}
 
-  .card-profile{
-    height:64px; width:100%; display:block;
-    background:linear-gradient(180deg, var(--lake-soft), transparent);
+  .day-stats{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;}
+  .day-stat-col{background:var(--bg); border-radius:10px; padding:10px 11px;}
+  .day-stat-tag{
+    font-family:'IBM Plex Mono', monospace; font-size:10px; font-weight:700;
+    text-transform:uppercase; letter-spacing:0.06em; color:#fff;
+    background:var(--sec-itineraire); padding:2px 8px; border-radius:5px; display:inline-block; margin-bottom:7px;
   }
+  .day-stat-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:6px;}
+  .day-stat-item{text-align:center;}
+  .day-stat-val{font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:13.5px; color:var(--ink); display:block;}
+  .day-stat-val.plus{color:var(--sec-itineraire);}
+  .day-stat-val.minus{color:var(--sec-refuge);}
+  .day-stat-label{font-size:8.5px; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft);}
 
-  .card-body{padding:20px 22px 22px;}
-  .card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:8px;}
-  .card-massif{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:11px; text-transform:uppercase; letter-spacing:0.08em;
-    color:var(--trail);
+  .fiche-link{
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    font-size:13px; font-weight:600; text-decoration:none;
+    background:var(--sec-itineraire); color:#fff;
+    padding:9px 14px; border-radius:9px; margin-top:4px;
   }
-  .card-alt{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:11px; color:var(--ink-soft);
-  }
-  .card-title{
-    font-family:'Fraunces', serif;
-    font-weight:600; font-size:22px;
-    color:var(--pine-deep);
-    margin:0 0 12px;
-    line-height:1.15;
-  }
-  .badges{display:flex; flex-wrap:wrap; gap:7px; margin-bottom:16px;}
-  .badge{
-    font-size:11.5px; padding:4px 10px; border-radius:20px;
-    font-family:'IBM Plex Mono', monospace;
-  }
-  .badge.level-facile{background:#E5EFE3; color:var(--easy);}
-  .badge.level-modere{background:#F4E9D6; color:var(--moderate);}
-  .badge.level-sportif, .badge.level-difficile{background:#F5E1DA; color:var(--hard);}
-  .badge.transport-direct{background:var(--lake-soft); color:var(--lake);}
-  .badge.transport-correspondance{background:#EEE9DD; color:var(--ink-soft);}
-  .badge.open-now{background:var(--pine); color:var(--white);}
-  .badge.closed-now{background:#E7E3D4; color:var(--ink-soft);}
+  .fiche-link:hover{filter:brightness(1.08);}
 
-  .card-facts{
-    display:grid; grid-template-columns:1fr 1fr; gap:10px 16px;
-    padding:14px 0 6px; border-top:1px dashed var(--line);
+  .trajet-group{
+    border:1px solid var(--sec-line); border-radius:12px; overflow:hidden; margin-bottom:12px;
   }
-  .bus-facts{
-    display:grid; grid-template-columns:1fr 1fr; gap:10px 16px;
-    padding-bottom:14px;
-  }
-  .day-facts{
-    display:grid; grid-template-columns:1fr 1fr; gap:12px;
-    padding-bottom:14px;
-  }
-  .day-fact-col{
-    display:flex; flex-direction:column; gap:3px;
-    background:var(--white);
-    border:1px solid var(--line);
-    border-radius:8px;
-    padding:10px 12px;
-  }
-  .day-fact-tag{
+  .trajet-group:last-child{margin-bottom:0;}
+  .trajet{background:var(--sec-soft); padding:12px 14px;}
+  .trajet-tag{
     font-family:'IBM Plex Mono', monospace; font-size:10px; text-transform:uppercase;
-    letter-spacing:0.06em; color:var(--trail); margin-bottom:2px;
+    letter-spacing:0.06em; color:var(--sec-transport); font-weight:600; margin-bottom:6px; display:block;
   }
-  .day-fact-col .fact-val{font-size:16px; font-weight:600;}
-  .dplus, .dminus{
-    font-family:'IBM Plex Mono', monospace; font-size:12.5px;
-    display:inline-block; margin-right:10px;
-  }
-  .dplus{color:var(--easy);}
-  .dminus{color:var(--hard);}
-  .duree-val{
-    font-family:'IBM Plex Mono', monospace; font-size:12px;
-    color:var(--ink-soft); display:block; margin-top:4px;
-  }
-  .duree-moyenne{
-    font-size:13.5px; color:var(--ink); margin:0 0 12px;
-    background:var(--lake-soft); padding:8px 12px; border-radius:8px;
-  }
-  .duree-moyenne strong{color:var(--lake); font-family:'IBM Plex Mono', monospace;}
-  .front-links{margin-bottom:12px;}
-  .link-btn.gpx-front{
-    font-size:12.5px; padding:7px 12px;
-    background:var(--white); border:1px solid var(--trail);
-    color:var(--trail);
-  }
-  .link-btn.gpx-front:hover{background:var(--trail); color:var(--white);}
-  .fact-label{
-    font-family:'IBM Plex Mono', monospace; font-size:10px;
-    text-transform:uppercase; letter-spacing:0.06em; color:var(--ink-soft);
-    display:block; margin-bottom:2px;
-  }
-  .fact-val{font-size:14.5px; color:var(--ink); font-weight:500;}
-  .fact-val.mono{font-family:'IBM Plex Mono', monospace; font-size:14px;}
+  .trajet-route{display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:13.5px; font-weight:500; color:var(--ink);}
+  .trajet-time{font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:14px; color:var(--ink); white-space:nowrap;}
+  .trajet-arrow{color:var(--sec-transport); font-size:15px;}
+  .trajet-footer{background:#fff; padding:0 14px;}
 
-  .card-cta{
+  .refuge-row{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:8px;}
+  .refuge-name{font-family:'Fraunces', serif; font-weight:600; font-size:16px; color:var(--ink);}
+  .refuge-price{font-family:'Fraunces', serif; font-weight:700; font-size:19px; color:var(--sec-refuge); white-space:nowrap;}
+  .refuge-price span{font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--ink-soft); font-weight:400; display:block;}
+  .maps-link{font-size:13px; color:var(--sec-transport); text-decoration:none; display:inline-flex; align-items:center; gap:5px;}
+  .maps-link:hover{text-decoration:underline;}
+
+  .dropdown-toggle{
+    width:100%; text-align:left; background:none; border:none; cursor:pointer;
+    font-family:'Work Sans', sans-serif; font-size:12.5px; font-weight:600;
+    color:var(--sec-color); padding:8px 0 0; margin-top:6px;
     display:flex; align-items:center; justify-content:space-between;
-    margin-top:6px;
+    border-top:1px dashed var(--sec-line);
   }
-  .price-tag{
-    font-family:'Fraunces', serif; font-weight:600; font-size:19px; color:var(--pine-deep);
+  .trajet-footer .dropdown-toggle{padding:10px 0; margin-top:0; border-top:none;}
+  .trajet-footer .dropdown-content{padding:0 0 12px;}
+  .dropdown-chevron{transition:transform .18s ease; font-size:11px;}
+  .dropdown-toggle.open .dropdown-chevron{transform:rotate(180deg);}
+  .dropdown-content{display:none; padding-top:12px; font-size:13.5px; color:var(--ink-soft); line-height:1.6;}
+  .dropdown-content.open{display:block;}
+  .dropdown-content .day-block{margin-bottom:10px;}
+  .dropdown-content .day-tag{
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; font-weight:600;
+    color:#fff; background:var(--sec-itineraire); padding:2px 8px; border-radius:5px; margin-right:6px;
   }
-  .price-tag span{font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-soft); font-weight:400;}
-  .expand-hint{
-    font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--lake);
+  .dropdown-links{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;}
+  .dd-link{
+    font-size:12.5px; font-weight:500; text-decoration:none;
+    padding:7px 12px; border-radius:8px; border:1px solid var(--sec-line);
+    color:var(--ink); background:#fff;
   }
-
-  /* ---------- Detail panel ---------- */
-  .detail{
-    display:none;
-    padding:0 22px 22px;
-    border-top:1px solid var(--line);
-    margin-top:2px;
-  }
-  .card.open .detail{display:block;}
-  .card.open{grid-column: span 1;}
-  .detail-section{padding-top:16px;}
-  .detail-section + .detail-section{border-top:1px dashed var(--line); margin-top:16px;}
-  .detail-h{
-    font-family:'IBM Plex Mono', monospace; font-size:11px; text-transform:uppercase;
-    letter-spacing:0.08em; color:var(--trail); margin:0 0 10px;
-  }
-  .day-block{display:flex; gap:12px; margin-bottom:10px; font-size:14px;}
-  .day-tag{
-    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--white);
-    background:var(--pine); border-radius:5px; padding:2px 7px; height:fit-content; white-space:nowrap;
-  }
-  .links-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;}
-  .link-btn{
-    font-family:'Work Sans', sans-serif; font-size:13px; font-weight:500;
-    text-decoration:none; padding:9px 14px; border-radius:8px;
-    display:inline-flex; align-items:center; gap:6px;
-    border:1px solid var(--line);
-    color:var(--ink);
-    background:var(--white);
-    transition:all .15s ease;
-  }
-  .link-btn:hover{border-color:var(--lake); color:var(--lake);}
-  .link-btn.primary{background:var(--pine); border-color:var(--pine); color:var(--white);}
-  .link-btn.primary:hover{background:var(--pine-deep); border-color:var(--pine-deep); color:var(--white);}
-  .note{
-    font-size:13px; color:var(--ink-soft); background:var(--trail-soft);
-    padding:10px 12px; border-radius:8px; margin-top:10px;
-  }
-
-  .empty-state{
-    text-align:center; padding:70px 20px; color:var(--ink-soft);
-    font-family:'Fraunces', serif; font-size:20px;
-  }
+  .dd-link:hover{border-color:var(--sec-color); color:var(--sec-color);}
+  .note-box{background:var(--sec-soft); border-radius:8px; padding:9px 11px; margin-top:10px; font-size:12.5px;}
 
   footer{
-    margin-top:56px; padding-top:24px; border-top:1px solid var(--line);
+    margin-top:56px; padding-top:22px; border-top:1px solid var(--line);
     font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--ink-soft);
   }
 
   @media (max-width:640px){
-    .filters-inner{gap:14px;}
-    select{min-width:140px;}
-    .reset-btn{margin-left:0;}
+    .stat-row{grid-template-columns:repeat(2,1fr);}
   }
 </style>
 </head>
 <body>
 
-<svg class="contour-bg" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" preserveAspectRatio="none">
-  <defs>
-    <pattern id="contours" width="900" height="600" patternUnits="userSpaceOnUse">
-      <path d="M0,500 Q150,420 300,470 T600,440 T900,480" fill="none" stroke="#DAD5C0" stroke-width="1"/>
-      <path d="M0,540 Q150,460 300,510 T600,480 T900,520" fill="none" stroke="#DAD5C0" stroke-width="1"/>
-      <path d="M0,580 Q150,500 300,550 T600,520 T900,560" fill="none" stroke="#DAD5C0" stroke-width="1"/>
-      <path d="M-50,150 Q100,80 250,130 T550,100 T900,140" fill="none" stroke="#DAD5C0" stroke-width="1"/>
-      <path d="M-50,190 Q100,120 250,170 T550,140 T900,180" fill="none" stroke="#DAD5C0" stroke-width="1"/>
-    </pattern>
-  </defs>
-  <rect width="100%" height="100%" fill="url(#contours)"/>
-</svg>
-
 <div class="wrap">
 
   <header>
-    <p class="eyebrow">Grenoble → montagne, sans voiture</p>
-    <h1>Randos avec <em>refuge gardé</em>,<br>accessibles en bus</h1>
-    <p class="subhead">3 itinéraires validés du Vercors, de Belledonne et de l'Oisans, joignables en transport en commun depuis Grenoble — chaque fiche coupe le trajet en deux journées avec nuitée en refuge gardé.</p>
+    <p class="eyebrow">Grenoble &amp; Lyon → montagne, sans voiture</p>
+    <h1>Randos avec <span class="accent1">refuge</span> <span class="accent2">gardé</span>,<br>en <span class="accent3">bus</span> &amp; train</h1>
+    <p class="subhead">6 itinéraires du Vercors, de Belledonne et de l'Oisans — chacun coupe le trajet en deux journées avec nuitée en refuge gardé, accessible en transport en commun.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:var(--vercors)"></span>Vercors</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--belledonne)"></span>Belledonne</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--oisans)"></span>Écrins / Oisans</span>
+    </div>
   </header>
 
   <div class="grid" id="grid"></div>
 
   <footer>
-    Dernière vérification des horaires et tarifs : juillet 2026 · Les horaires de bus changent à la rentrée scolaire (sept. 2026), à revérifier sur carsisere.auvergnerhonealpes.fr avant de partir.
+    Dernière vérification des horaires et tarifs : juillet 2026 · Horaires T64/T65/T66 valables jusqu'au 31/08/2026 (nouvelle grille de rentrée à revérifier) · Trains Lyon↔Grenoble : ~1 train/heure le week-end, à confirmer sur SNCF Connect le jour J.
   </footer>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-// ============================================
-// Connexion Supabase — remplace ces 2 valeurs
-// (Project Settings → API dans ton dashboard Supabase)
-// ============================================
-const SUPABASE_URL = 'https://xomfsciqbljjfzrzjilz.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhvbWZzY2lxYmxqamZ6cnpqaWx6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1NDE5NTcsImV4cCI6MjEwMDExNzk1N30.rNuei181sRq96a_nAtaK_UOHpmE1sHNSSCW_29KaPXE';
+const REFUGES = [
+{
+  id:'pra', nom:'Refuge de la Pra', massif:'Belledonne', altitude:'2105 m',
+  trainFicheUrl:'https://ter-fiches-horaires.sncf.fr/publish/01%20-%20WEB%20-%20ETE%202026%20-%20Du%2027-07%20au%2012-12-26.pdf',
+  adresse:'Refuge de la Pra, 38410 Chamrousse', mapsUrl:'https://www.google.com/maps/search/?api=1&query=Refuge+de+la+Pra+Chamrousse',
+  prixLabel:'42–55 €', ouvertureDebut:'05/06/2026', ouvertureFin:'27/09/2026',
+  specificites:"Réservation du bus conseillée en été sur <a href=\"https://www.bus-et-clic.com/mreso\" target=\"_blank\" rel=\"noopener\">Bus et Clic</a>. Chiens non acceptés au refuge. Score : 7/7 sur la grille d'éligibilité.",
+  ficheUrl:'https://www.visorando.com/randonnee-a-la-decouverte-des-lacs-entre-chamrouss/', ficheLabel:'Voir le topo (Visorando, avec GPX)',
+  j1:{km:'9 km', dplus:'+700 m', dminus:'-50 m', duree:'4h30-5h',
+      texte:"Montée par les lacs Robert jusqu'au refuge (source FFCAM/Chamrousse). Version courte via télécabine de la Croix de Chamrousse (3h, ~250 m restants)."},
+  j2:{km:'9 km', dplus:'+150 m', dminus:'-850 m', duree:'~4h',
+      texte:"Boucle possible par le lac Léama et le lac Longet au retour vers le Recoin."},
+  aller:{depart:'Grenoble Gare Routière', arrivee:'Chamrousse 1650 - Recoin', heureDepart:'~08:00', heureArrivee:'~09:15',
+         detail:'Ligne N93 (réseau M réso), trajet direct sans correspondance. Horaires grille été 2026 publiés en image (non extractibles) — motif 2025 utilisé comme référence, à confirmer.',
+         ficheUrl:'https://www.chamrousse.com/bus-ete.html', ficheLabel:'Fiche horaire N93',
+         resaUrl:'https://www.bus-et-clic.com/mreso', resaLabel:'Réserver (Bus et Clic)'},
+  retour:{depart:'Chamrousse 1650 - Recoin', arrivee:'Grenoble Gare Routière', heureDepart:'~15:20', heureArrivee:'~16:35',
+          detail:'Ligne N93, trajet direct. Tarif : 10 € l\'aller simple / 12 € l\'aller-retour.',
+          ficheUrl:'https://www.chamrousse.com/bus-ete.html', ficheLabel:'Fiche horaire N93',
+          resaUrl:'https://www.bus-et-clic.com/mreso', resaLabel:'Réserver (Bus et Clic)'}
+},
+{
+  id:'moliere', nom:'Refuge de la Molière', massif:'Vercors', altitude:'1600 m',
+  trainFicheUrl:'https://ter-fiches-horaires.sncf.fr/publish/01%20-%20WEB%20-%20ETE%202026%20-%20Du%2027-07%20au%2012-12-26.pdf',
+  adresse:'La Molière, 38360 Engins', mapsUrl:'https://www.google.com/maps/search/?api=1&query=La+Moli%C3%A8re+38360+Engins',
+  prixLabel:'58 €', ouvertureDebut:'14/05/2026', ouvertureFin:'18/10/2026',
+  specificites:"Fermé le mardi hors haute saison (01/07–13/09 : ouvert tous les jours). Moyenne week-end : 7 km/jour. Score : 7/7.",
+  ficheUrl:'https://rando.parc-du-vercors.fr/fr/service/615-Refuge-de-la-Moliere', ficheLabel:'Voir le topo (Parc du Vercors)',
+  j1:{km:'9 km', dplus:'+712 m', dminus:'-15 m', duree:'3h30-4h',
+      texte:"Départ du village d'Engins (935 m), montée par le GR9 jusqu'au point de vue de la Molière (1632 m, table d'orientation 360°)."},
+  j2:{km:'5 km', dplus:'+35 m', dminus:'-639 m', duree:'~2h',
+      texte:"Traversée de l'alpage, variante possible par le Pas de l'Ours (1649 m). Descente par la piste forestière vers Engins."},
+  aller:{depart:'Grenoble Gare Routière', arrivee:'Engins, les Jaux', heureDepart:'07:40', heureArrivee:'08:16',
+         detail:'Ligne T64, trajet direct sans correspondance. Alternative : départ 10:30, arrivée 11:06.',
+         ficheUrl:'https://www.vercors-experience.com/medias/documents/Horaires_T64_-_2025-26.pdf', ficheLabel:'Fiche horaire T64',
+         resaUrl:'https://boutique.oura.com/fr/home', resaLabel:'Acheter le billet (Oùra)'},
+  retour:{depart:'Engins, les Jaux', arrivee:'Grenoble Gare Routière', heureDepart:'16:57', heureArrivee:'17:35',
+          detail:'Ligne T64, trajet direct. Horaires exacts confirmés sur la grille "toute l\'année".',
+          ficheUrl:'https://www.vercors-experience.com/medias/documents/Horaires_T64_-_2025-26.pdf', ficheLabel:'Fiche horaire T64',
+          resaUrl:'https://boutique.oura.com/fr/home', resaLabel:'Acheter le billet (Oùra)'}
+},
+{
+  id:'feneys', nom:'Refuge des Feneys', massif:'Vercors', altitude:'1629 m',
+  trainFicheUrl:'https://ter-fiches-horaires.sncf.fr/publish/01%20-%20WEB%20-%20ETE%202026%20-%20Du%2027-07%20au%2012-12-26.pdf',
+  adresse:'Les Feneys, 38880 Autrans', mapsUrl:'https://www.google.com/maps/search/?api=1&query=Les+Feneys+38880+Autrans',
+  prixLabel:'63 €', ouvertureDebut:'01/05/2026', ouvertureFin:'30/09/2026',
+  specificites:"Animaux admis. Chaussures de randonnée recommandées. Tarte à la myrtille de Caroline très recommandée. Score : 7/7.",
+  ficheUrl:'https://www.vercors-experience.com/medias/images/prestataires/383312-feneys.gpx', ficheLabel:'Télécharger la trace GPX',
+  j1:{km:'8 km', dplus:'+655 m', dminus:'-174 m', duree:'~3h30-4h',
+      texte:"Depuis le centre d'Autrans, via le Bouchet, la cascade (1131 m), la Combe Payraud jusqu'au Pas de l'Ours (1649 m), la crête de Charande (1709 m), puis le Pas du Tracollet jusqu'au refuge."},
+  j2:{km:'7 km', dplus:'+143 m', dminus:'-663 m', duree:'~2h30-3h',
+      texte:"Redescente directe vers Autrans par un chemin différent de l'aller, vue sur le village encore endormi."},
+  aller:{depart:'Grenoble Gare Routière', arrivee:'Autrans (village)', heureDepart:'09:55', heureArrivee:'~11:35',
+         detail:"T65 Grenoble→Lans-en-Vercors (09:55→10:47), correspondance à Lans-en-Vercors \"Office de Tourisme\" avec le T66 (départ confirmé le samedi à 11:20) → Autrans.",
+         ficheUrl:'https://www.vercors-experience.com/medias/documents/Horaires_T66_2025-26.pdf', ficheLabel:'Fiche horaire T66',
+         resaUrl:'https://boutique.oura.com/fr/home', resaLabel:'Acheter le billet (Oùra)'},
+  retour:{depart:'Autrans (village)', arrivee:'Grenoble Gare Routière', heureDepart:'~16:00', heureArrivee:'~17:15',
+          detail:"T66 Autrans→Lans-en-Vercors puis correspondance T65→Grenoble. Horaire retour à confirmer précisément (grille T66 retour non extraite avec certitude).",
+          ficheUrl:'https://www.vercors-experience.com/medias/documents/Horaires_T65_-_2025-26.pdf', ficheLabel:'Fiche horaire T65',
+          resaUrl:'https://boutique.oura.com/fr/home', resaLabel:'Acheter le billet (Oùra)'}
+},
+{
+  id:'narces', nom:'Refuge des Narces', massif:'Vercors', altitude:'~1450 m',
+  trainFicheUrl:'https://ter-fiches-horaires.sncf.fr/publish/01%20-%20WEB%20-%20ETE%202026%20-%20Du%2027-07%20au%2012-12-26.pdf',
+  adresse:'Route forestière D106M, 38112 Méaudre', mapsUrl:'https://www.google.com/maps/search/?api=1&query=Refuge+des+Narces+M%C3%A9audre',
+  prixLabel:'Non communiqué', ouvertureDebut:'01/05/2026', ouvertureFin:'30/09/2026',
+  specificites:"⚠️ J2 court (3 km, sous la cible de 6 km/jour) — accepté malgré cet écart. Pas de source d'eau sur l'itinéraire. Score : 5/7.",
+  ficheUrl:'https://www.vercors-experience.com/medias/images/prestataires/383765-narces.gpx', ficheLabel:'Télécharger la trace GPX',
+  j1:{km:'6 km', dplus:'+505 m', dminus:'-50 m', duree:'~2h30-3h',
+      texte:"Depuis le parking des pistes de ski alpin de Méaudre, montée par la Combe du Furon jusqu'au carrefour de la Vira (1380 m), puis le Gros Martel (1556 m)."},
+  j2:{km:'3 km', dplus:'+0 m', dminus:'-307 m', duree:'~1h',
+      texte:"Redescente vers Méaudre en passant par le point de vue du Crêt (1335 m)."},
+  aller:{depart:'Grenoble Gare Routière', arrivee:'Méaudre (village)', heureDepart:'09:55', heureArrivee:'~11:35',
+         detail:"T65 Grenoble→Lans-en-Vercors (09:55→10:47), correspondance T66 (11:20 confirmé samedi) → Méaudre.",
+         ficheUrl:'https://www.vercors-experience.com/medias/documents/Horaires_T66_2025-26.pdf', ficheLabel:'Fiche horaire T66',
+         resaUrl:'https://boutique.oura.com/fr/home', resaLabel:'Acheter le billet (Oùra)'},
+  retour:{depart:'Méaudre (village)', arrivee:'Grenoble Gare Routière', heureDepart:'~16:00', heureArrivee:'~17:15',
+          detail:"T66 Méaudre→Lans-en-Vercors puis correspondance T65→Grenoble. Horaire retour à confirmer précisément.",
+          ficheUrl:'https://www.vercors-experience.com/medias/documents/Horaires_T65_-_2025-26.pdf', ficheLabel:'Fiche horaire T65',
+          resaUrl:'https://boutique.oura.com/fr/home', resaLabel:'Acheter le billet (Oùra)'}
+},
+{
+  id:'geve', nom:'Refuge de Gève', massif:'Vercors', altitude:'1289 m',
+  trainFicheUrl:'https://ter-fiches-horaires.sncf.fr/publish/01%20-%20WEB%20-%20ETE%202026%20-%20Du%2027-07%20au%2012-12-26.pdf',
+  adresse:'Refuge de Gève, 38880 Autrans-Méaudre en Vercors', mapsUrl:'https://www.google.com/maps/search/?api=1&query=Refuge+de+G%C3%A8ve+Autrans',
+  prixLabel:'55 €', ouvertureDebut:'16/05/2026', ouvertureFin:'30/09/2026',
+  specificites:"⚠️ J2 court (4 km) et dénivelé très faible — accepté malgré cet écart. Bain nordique et balades à poney/cheval disponibles sur place l'été. Score : 5/7.",
+  ficheUrl:'https://www.vercors-experience.com/itineraire/une-escapade-au-refuge-de-geve.html', ficheLabel:'Voir le topo',
+  j1:{km:'6 km', dplus:'+168 m', dminus:'-0 m', duree:'~1h30-2h',
+      texte:"Depuis le parking de Gève (Autrans), vagabonder entre forêt et plaine sur le plateau de Gève (1289 m), domaine de ski nordique en hiver."},
+  j2:{km:'4 km', dplus:'+98 m', dminus:'-266 m', duree:'~1h-1h30',
+      texte:"Sentiers familiaux, passage par le stade de biathlon \"David Moretti\" avant de rejoindre Autrans."},
+  aller:{depart:'Grenoble Gare Routière', arrivee:'Autrans (village)', heureDepart:'10:30', heureArrivee:'~11:35',
+         detail:"T64 Grenoble→Lans-en-Vercors (10:30→11:13), correspondance T66 (11:20 confirmé samedi) → Autrans.",
+         ficheUrl:'https://www.vercors-experience.com/medias/documents/Horaires_T66_2025-26.pdf', ficheLabel:'Fiche horaire T66',
+         resaUrl:'https://boutique.oura.com/fr/home', resaLabel:'Acheter le billet (Oùra)'},
+  retour:{depart:'Autrans (village)', arrivee:'Grenoble Gare Routière', heureDepart:'~16:00', heureArrivee:'~17:35',
+          detail:"T66 Autrans→Lans-en-Vercors puis correspondance T64→Grenoble. Horaire retour à confirmer précisément.",
+          ficheUrl:'https://www.vercors-experience.com/medias/documents/Horaires_T64_-_2025-26.pdf', ficheLabel:'Fiche horaire T64',
+          resaUrl:'https://boutique.oura.com/fr/home', resaLabel:'Acheter le billet (Oùra)'}
+},
+{
+  id:'villar-arene', nom:"Refuge de l'Alpe de Villar-d'Arène", massif:'Écrins/Oisans', altitude:'2071 m',
+  trainFicheUrl:'https://ter-fiches-horaires.sncf.fr/publish/01%20-%20WEB%20-%20ETE%202026%20-%20Du%2027-07%20au%2012-12-26.pdf',
+  adresse:"Refuge de l'Alpe de Villar-d'Arène, 05480 Villar-d'Arène", mapsUrl:'https://www.google.com/maps/search/?api=1&query=Refuge+de+l%27Alpe+de+Villar-d%27Arene',
+  prixLabel:'57 €', ouvertureDebut:'13/06/2026', ouvertureFin:'20/09/2026',
+  specificites:"⚠️ Distance légèrement sous la cible (~4,5 km/jour). Chiens non acceptés (Parc national des Écrins). <a href=\"https://www.reservation-zou-resalp.fr/lignes/55-briancon-grenoble/\" target=\"_blank\" rel=\"noopener\">Réservation du bus obligatoire</a>, pas possible le jour même. Score : 6/7 (accepté).",
+  ficheUrl:'https://www.grand-tour-ecrins.fr/fr/trek/905606-L-Alpe-de-Villar-d-Arene', ficheLabel:'Voir le topo (Grand Tour des Écrins)',
+  j1:{km:'~4-5 km', dplus:'+379 m', dminus:'-20 m', duree:'~2h',
+      texte:"Bus Zou 55 (réservation 36h avant) jusqu'au Col du Lautaret (2058 m). Montée par le Sentier des Crevasses (passage équipé de chaînes sur 50 m) jusqu'au refuge (2071 m)."},
+  j2:{km:'~5 km', dplus:'+20 m', dminus:'-400 m', duree:'~2h',
+      texte:"Descente vers Villar-d'Arène par le Pont d'Arsine."},
+  aller:{depart:'Grenoble Gare Routière', arrivee:'Col du Lautaret', heureDepart:'~07h-09h', heureArrivee:'~09h30-11h30',
+         detail:"Ligne Zou 55 (Grenoble↔Briançon, réseau Sud). Réservation obligatoire 36h à l'avance, pas de réservation le jour même.",
+         ficheUrl:'https://itineraires-zou.maregionsud.fr/fr/horaires/Zou%20!%20Express/BUS/ligne/55/direction/OUTWARD/14554', ficheLabel:'Fiche horaire Zou 55',
+         resaUrl:'https://www.reservation-zou-resalp.fr/lignes/55-briancon-grenoble/', resaLabel:'Réserver (Zou Résalp)'},
+  retour:{depart:"Villar-d'Arène", arrivee:'Grenoble Gare Routière', heureDepart:'~16h-18h', heureArrivee:'~18h-20h',
+          detail:"Ligne Zou 55. Réservation avant le vendredi 16h pour un trajet dimanche/lundi.",
+          ficheUrl:'https://itineraires-zou.maregionsud.fr/fr/horaires/Zou%20!%20Express/BUS/ligne/55/direction/OUTWARD/14554', ficheLabel:'Fiche horaire Zou 55',
+          resaUrl:'https://www.reservation-zou-resalp.fr/lignes/55-briancon-grenoble/', resaLabel:'Réserver (Zou Résalp)'}
+},
+];
 
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const MASSIF_COLORS = {
+  'Vercors': {color:'var(--vercors)', soft:'var(--vercors-soft)'},
+  'Belledonne': {color:'var(--belledonne)', soft:'var(--belledonne-soft)'},
+  'Écrins/Oisans': {color:'var(--oisans)', soft:'var(--oisans-soft)'},
+};
 
-let REFUGES = [];
+let openStates = {};
 
-async function loadRefuges(){
-  const grid = document.getElementById('grid');
-  grid.innerHTML = '<p style="font-family:\'IBM Plex Mono\',monospace;color:var(--ink-soft);padding:40px 0;">Chargement des refuges…</p>';
-
-  const { data, error } = await supabaseClient.from('refuges').select('*');
-
-  if(error){
-    grid.innerHTML = `<p style="font-family:'IBM Plex Mono',monospace;color:var(--hard);padding:40px 0;">Erreur de chargement : ${error.message}<br>Vérifie SUPABASE_URL / SUPABASE_ANON_KEY et que la table "refuges" existe.</p>`;
-    console.error(error);
-    return;
-  }
-
-  // Adapte les noms de colonnes SQL (snake_case) au format attendu par les cartes
-  REFUGES = data.map(r => ({
-    id: r.id, nom: r.nom, massif: r.massif, altitude: r.altitude, niveau: r.niveau,
-    transport: r.transport, prix: r.prix, prixLabel: r.prix_label,
-    ouverture: { debut: r.ouverture_debut, fin: r.ouverture_fin },
-    ligne: r.ligne, arret: r.arret, busAller: r.bus_aller, busRetour: r.bus_retour,
-    j1km: r.j1_km, j1dplus: r.j1_dplus, j1dminus: r.j1_dminus, j1duree: r.j1_duree, j1: r.j1_texte,
-    j2km: r.j2_km, j2dplus: r.j2_dplus, j2dminus: r.j2_dminus, j2duree: r.j2_duree, j2: r.j2_texte,
-    dureeMoyenne: r.duree_moyenne, note: r.note,
-    gpx: r.gpx_url, gpxLabel: r.gpx_label,
-    resaRefuge: r.resa_refuge_url, resaRefugeLabel: r.resa_refuge_label,
-    resaTransport: r.resa_transport_url, resaTransportLabel: r.resa_transport_label,
-    ficheHoraire: r.fiche_horaire_url,
-  }));
-
+function toggle(key){
+  openStates[key] = !openStates[key];
   render();
 }
 
-
-function fmtDate(iso){
-  const [y,m,d] = iso.split('-');
-  return `${d}/${m}/${y}`;
-}
-
-let openId = null;
-
-function render(){
-  const grid = document.getElementById('grid');
-  grid.innerHTML = REFUGES.map(r => cardHTML(r)).join('');
-
-  REFUGES.forEach(r=>{
-    const el = document.getElementById('card-'+r.id);
-    if(el){
-      el.addEventListener('click', ()=>{
-        openId = (openId === r.id) ? null : r.id;
-        render();
-      });
-      el.setAttribute('tabindex','0');
-      el.addEventListener('keydown', (e)=>{
-        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); el.click(); }
-      });
-    }
-  });
+function trajetBlock(t, tag){
+  return `<div class="trajet"><span class="trajet-tag">${tag}</span>
+    <div class="trajet-route">
+      <span>${t.depart} <span class="trajet-arrow">→</span> ${t.arrivee}</span>
+      <span class="trajet-time">${t.heureDepart} <span class="trajet-arrow">→</span> ${t.heureArrivee}</span>
+    </div>
+  </div>`;
 }
 
 function cardHTML(r){
-  const isExpanded = openId === r.id;
+  const mc = MASSIF_COLORS[r.massif];
+  const itOpen = openStates[r.id+'-itineraire'];
+  const alOpen = openStates[r.id+'-aller'];
+  const reOpen = openStates[r.id+'-retour'];
+  const rfOpen = openStates[r.id+'-refuge'];
+
   return `
-  <div class="card ${isExpanded ? 'open' : ''}" id="card-${r.id}">
-    <svg class="card-profile" viewBox="0 0 400 64" preserveAspectRatio="none">
-      <polyline points="0,50 60,30 110,42 170,14 230,36 300,20 360,38 400,26" fill="none" stroke="#2B5C6B" stroke-width="2" opacity="0.55"/>
-    </svg>
-    <div class="card-body">
-      <div class="card-top">
-        <span class="card-massif">${r.massif}</span>
-        <span class="card-alt">${r.altitude}</span>
-      </div>
+  <div class="card" style="--massif-color:${mc.color}; --massif-soft:${mc.soft};">
+    <div class="card-head">
+      <span class="massif-badge">${r.massif}</span>
       <h3 class="card-title">${r.nom}</h3>
-      <div class="card-facts">
-        <div><span class="fact-label">Ligne</span><span class="fact-val mono">${r.ligne}</span></div>
-        <div><span class="fact-label">Arrêt</span><span class="fact-val">${r.arret}</span></div>
+      <span class="card-alt">${r.altitude}</span>
+    </div>
+
+    <div class="section" style="--sec-color:var(--sec-itineraire); --sec-soft:var(--sec-itineraire-soft); --sec-line:#CDEBE2;">
+      <div class="section-head">
+        <span class="section-icon">↝</span>
+        <span class="section-label">Itinéraire</span>
       </div>
-      <div class="bus-facts">
-        <div><span class="fact-label">Bus aller</span><span class="fact-val mono">${r.busAller}</span></div>
-        <div><span class="fact-label">Bus retour</span><span class="fact-val mono">${r.busRetour}</span></div>
-      </div>
-      <div class="day-facts">
-        <div class="day-fact-col">
-          <span class="day-fact-tag">Jour 1</span>
-          <span class="fact-val mono">${r.j1km}</span>
-          <span class="dplus">▲ ${r.j1dplus}</span><span class="dminus">▼ ${r.j1dminus}</span>
-          <span class="duree-val">⏱ ${r.j1duree}</span>
+      <div class="section-body">
+        <div class="day-stats">
+          <div class="day-stat-col">
+            <span class="day-stat-tag">Jour 1</span>
+            <div class="day-stat-grid">
+              <div class="day-stat-item"><span class="day-stat-val">${r.j1.km}</span><span class="day-stat-label">Distance</span></div>
+              <div class="day-stat-item"><span class="day-stat-val plus">${r.j1.dplus}</span><span class="day-stat-label">D+</span></div>
+              <div class="day-stat-item"><span class="day-stat-val minus">${r.j1.dminus}</span><span class="day-stat-label">D-</span></div>
+            </div>
+            <div class="day-stat-item" style="margin-top:6px;"><span class="day-stat-val">${r.j1.duree}</span><span class="day-stat-label">Temps de marche</span></div>
+          </div>
+          <div class="day-stat-col">
+            <span class="day-stat-tag">Jour 2</span>
+            <div class="day-stat-grid">
+              <div class="day-stat-item"><span class="day-stat-val">${r.j2.km}</span><span class="day-stat-label">Distance</span></div>
+              <div class="day-stat-item"><span class="day-stat-val plus">${r.j2.dplus}</span><span class="day-stat-label">D+</span></div>
+              <div class="day-stat-item"><span class="day-stat-val minus">${r.j2.dminus}</span><span class="day-stat-label">D-</span></div>
+            </div>
+            <div class="day-stat-item" style="margin-top:6px;"><span class="day-stat-val">${r.j2.duree}</span><span class="day-stat-label">Temps de marche</span></div>
+          </div>
         </div>
-        <div class="day-fact-col">
-          <span class="day-fact-tag">Jour 2</span>
-          <span class="fact-val mono">${r.j2km}</span>
-          <span class="dplus">▲ ${r.j2dplus}</span><span class="dminus">▼ ${r.j2dminus}</span>
-          <span class="duree-val">⏱ ${r.j2duree}</span>
+        <a class="fiche-link" href="${r.ficheUrl}" target="_blank" rel="noopener">📄 ${r.ficheLabel}</a>
+        <button class="dropdown-toggle ${itOpen?'open':''}" onclick="toggle('${r.id}-itineraire')">
+          Détail de l'itinéraire &amp; trace GPX <span class="dropdown-chevron">▾</span>
+        </button>
+        <div class="dropdown-content ${itOpen?'open':''}">
+          <div class="day-block"><span class="day-tag">J1</span>${r.j1.texte}</div>
+          <div class="day-block"><span class="day-tag">J2</span>${r.j2.texte}</div>
         </div>
-      </div>
-      <div class="front-links">
-        ${r.gpx ? `<a class="link-btn gpx-front" href="${r.gpx}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🗺️ ${r.gpxLabel}</a>` : ''}
-      </div>
-      <div class="card-cta">
-        <div class="price-tag">${r.prixLabel}<br><span>demi-pension /pers.</span></div>
-        <span class="expand-hint">${isExpanded ? '▲ replier' : '▼ voir le détail'}</span>
       </div>
     </div>
-    <div class="detail">
-      <div class="detail-section">
-        <p class="detail-h">Refuge</p>
-        <p class="fact-val" style="font-size:18px;">${r.nom}</p>
+
+    <div class="section" style="--sec-color:var(--sec-transport); --sec-soft:var(--sec-transport-soft); --sec-line:#CBDCFB;">
+      <div class="section-head">
+        <span class="section-icon">🚌</span>
+        <span class="section-label">Transport</span>
       </div>
-      <div class="detail-section">
-        <p class="detail-h">Itinéraire — week-end 2 jours</p>
-        <div class="day-block"><span class="day-tag">J1</span><span>${r.j1}</span></div>
-        <div class="day-block"><span class="day-tag">J2</span><span>${r.j2}</span></div>
+      <div class="section-body">
+        <div class="trajet-group">
+          ${trajetBlock(r.aller, 'Trajet aller')}
+          <div class="trajet-footer">
+            <button class="dropdown-toggle ${alOpen?'open':''}" onclick="toggle('${r.id}-aller')">
+              Détail du trajet aller <span class="dropdown-chevron">▾</span>
+            </button>
+            <div class="dropdown-content ${alOpen?'open':''}">
+              <p style="margin:0 0 8px;">${r.aller.detail}</p>
+              <div class="dropdown-links">
+                <a class="dd-link" href="${r.trainFicheUrl}" target="_blank" rel="noopener">🚆 Fiche horaire train (Lyon↔Grenoble)</a>
+                <a class="dd-link" href="${r.aller.ficheUrl}" target="_blank" rel="noopener">📄 ${r.aller.ficheLabel}</a>
+                <a class="dd-link" href="${r.aller.resaUrl}" target="_blank" rel="noopener">🎫 ${r.aller.resaLabel}</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="trajet-group">
+          ${trajetBlock(r.retour, 'Trajet retour')}
+          <div class="trajet-footer">
+            <button class="dropdown-toggle ${reOpen?'open':''}" onclick="toggle('${r.id}-retour')">
+              Détail du trajet retour <span class="dropdown-chevron">▾</span>
+            </button>
+            <div class="dropdown-content ${reOpen?'open':''}">
+              <p style="margin:0 0 8px;">${r.retour.detail}</p>
+              <div class="dropdown-links">
+                <a class="dd-link" href="${r.trainFicheUrl}" target="_blank" rel="noopener">🚆 Fiche horaire train (Lyon↔Grenoble)</a>
+                <a class="dd-link" href="${r.retour.ficheUrl}" target="_blank" rel="noopener">📄 ${r.retour.ficheLabel}</a>
+                <a class="dd-link" href="${r.retour.resaUrl}" target="_blank" rel="noopener">🎫 ${r.retour.resaLabel}</a>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="detail-section">
-        <p class="detail-h">Ouverture du refuge (2026)</p>
-        <span class="fact-val mono">${fmtDate(r.ouverture.debut)} → ${fmtDate(r.ouverture.fin)}</span>
-        <p class="note">${r.note}</p>
+    </div>
+
+    <div class="section" style="--sec-color:var(--sec-refuge); --sec-soft:var(--sec-refuge-soft); --sec-line:#F7D8BE;">
+      <div class="section-head">
+        <span class="section-icon">🏔</span>
+        <span class="section-label">Refuge</span>
       </div>
-      <div class="detail-section">
-        <p class="detail-h">Réservations & horaires</p>
-        <div class="links-row">
-          <a class="link-btn primary" href="${r.resaRefuge}" target="_blank" rel="noopener">🏔 ${r.resaRefugeLabel}</a>
-          <a class="link-btn" href="${r.resaTransport}" target="_blank" rel="noopener">🚌 ${r.resaTransportLabel}</a>
-          <a class="link-btn" href="${r.ficheHoraire}" target="_blank" rel="noopener">📄 Fiche horaire ${r.ligne.split(' ')[0]}</a>
-          ${r.gpx ? `<a class="link-btn" href="${r.gpx}" target="_blank" rel="noopener">🗺️ ${r.gpxLabel}</a>` : ''}
+      <div class="section-body">
+        <div class="refuge-row">
+          <div>
+            <div class="refuge-name">${r.nom}</div>
+            <a class="maps-link" href="${r.mapsUrl}" target="_blank" rel="noopener">📍 ${r.adresse}</a>
+          </div>
+          <div class="refuge-price">${r.prixLabel}<span>demi-pension /pers.</span></div>
+        </div>
+        <button class="dropdown-toggle ${rfOpen?'open':''}" onclick="toggle('${r.id}-refuge')">
+          Dates d'ouverture &amp; spécificités <span class="dropdown-chevron">▾</span>
+        </button>
+        <div class="dropdown-content ${rfOpen?'open':''}">
+          <p style="margin:0 0 8px;"><strong>Ouvert du ${r.ouvertureDebut} au ${r.ouvertureFin}</strong></p>
+          <div class="note-box">${r.specificites}</div>
         </div>
       </div>
     </div>
   </div>`;
 }
 
-loadRefuges();
+function render(){
+  document.getElementById('grid').innerHTML = REFUGES.map(cardHTML).join('');
+}
+
+render();
 </script>
 
 </body>
