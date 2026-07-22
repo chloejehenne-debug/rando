@@ -383,6 +383,7 @@ async function loadRefuges(){
         specificites: ri.specificites,
         ficheUrl: ri.fiche_url, ficheLabel: ri.fiche_label,
         resaRefugeUrl: ri.resa_refuge_url, resaRefugeLabel: ri.resa_refuge_label,
+        siteUrl: ri.site_url, siteLabel: ri.site_label,
         trainFicheUrl: TRAIN_FICHE_URL,
         j1: {km: it.j1_km, dplus: it.j1_dplus, dminus: it.j1_dminus, duree: it.j1_duree, texte: it.j1_texte},
         j2: {km: it.j2_km, dplus: it.j2_dplus, dminus: it.j2_dminus, duree: it.j2_duree, texte: it.j2_texte},
@@ -556,6 +557,9 @@ function cardHTML(r){
         <div class="dropdown-content ${rfOpen?'open':''}">
           <p style="margin:0 0 8px;"><strong>Ouvert du ${r.ouvertureDebut} au ${r.ouvertureFin}</strong></p>
           <div class="note-box">${r.specificites}</div>
+          <div class="dropdown-links" style="margin-top:10px;">
+            <a class="dd-link" href="${r.siteUrl}" target="_blank" rel="noopener">🌐 ${r.siteLabel}</a>
+          </div>
         </div>
       </div>
     </div>
