@@ -330,6 +330,7 @@ async function loadRefuges(){
         ouvertureDebut: fmtDate(ri.ouverture_debut), ouvertureFin: fmtDate(ri.ouverture_fin),
         specificites: ri.specificites,
         ficheUrl: ri.fiche_url, ficheLabel: ri.fiche_label,
+        resaRefugeUrl: ri.resa_refuge_url, resaRefugeLabel: ri.resa_refuge_label,
         trainFicheUrl: TRAIN_FICHE_URL,
         j1: {km: it.j1_km, dplus: it.j1_dplus, dminus: it.j1_dminus, duree: it.j1_duree, texte: it.j1_texte},
         j2: {km: it.j2_km, dplus: it.j2_dplus, dminus: it.j2_dminus, duree: it.j2_duree, texte: it.j2_texte},
@@ -368,7 +369,7 @@ function toggle(key){
 function planningHTML(planning, debutRando, resaUrl, resaLabel){
   if(!planning) return '';
   const icons = {train:'🚆', bus:'🚌'};
-  const ficheLabels = {train:'Fiche horaire train', bus:'Fiche horaire'};
+  const ficheLabels = {train:'Horaires train', bus:'Horaires'};
   const steps = planning.map(s => `
     <div class="plan-step">
       <span class="plan-icon">${icons[s.type]}</span>
@@ -494,8 +495,9 @@ function cardHTML(r){
           </div>
           <div class="refuge-price">${r.prixLabel}<span>demi-pension /pers.</span></div>
         </div>
+        <a class="fiche-link" href="${r.resaRefugeUrl}" target="_blank" rel="noopener">🏔 ${r.resaRefugeLabel}</a>
         <button class="dropdown-toggle ${rfOpen?'open':''}" onclick="toggle('${r.id}-refuge')">
-          Dates d'ouverture &amp; spécificités <span class="dropdown-chevron">▾</span>
+          Ouverture &amp; détails <span class="dropdown-chevron">▾</span>
         </button>
         <div class="dropdown-content ${rfOpen?'open':''}">
           <p style="margin:0 0 8px;"><strong>Ouvert du ${r.ouvertureDebut} au ${r.ouvertureFin}</strong></p>
