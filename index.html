@@ -177,6 +177,13 @@
   .plan-body{flex:1;}
   .plan-route{font-size:13px; font-weight:600; color:var(--ink);}
   .plan-ligne{font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-soft);}
+  .plan-step-links{display:flex; flex-wrap:wrap; gap:6px; margin-top:5px;}
+  .dd-link-mini{
+    font-size:11.5px; font-weight:500; text-decoration:none;
+    padding:4px 9px; border-radius:7px; border:1px solid var(--sec-line);
+    color:var(--sec-color); background:#fff;
+  }
+  .dd-link-mini:hover{background:var(--sec-color); color:#fff;}
   .plan-time{font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:13px; color:var(--sec-color); white-space:nowrap;}
   .plan-goal{
     display:flex; align-items:center; gap:8px; margin-top:4px;
@@ -264,16 +271,18 @@ let TRAIN_FICHE_URL = '';
 
 function mapTrajet(t){
   const etapesSorted = (t.etapes || []).slice().sort((a,b)=>a.ordre-b.ordre);
+  const resaLignes = ['N93', 'Zou 55']; // lignes nécessitant réservation
   return {
     depart: t.depart, arrivee: t.arrivee,
     heureDepart: t.heure_depart, heureArrivee: t.heure_arrivee,
     detail: t.detail,
-    ficheUrl: t.bus_fiche_url, ficheLabel: t.bus_fiche_label,
     resaUrl: t.resa_url, resaLabel: t.resa_label,
     debutRando: t.debut_rando,
     planning: etapesSorted.map(e => ({
       type: e.type, ligne: e.ligne, from: e.depuis, to: e.vers,
-      depart: e.heure_depart, arrivee: e.heure_arrivee
+      depart: e.heure_depart, arrivee: e.heure_arrivee,
+      ficheUrl: e.fiche_url,
+      showResa: resaLignes.includes(e.ligne)
     }))
   };
 }
@@ -356,15 +365,20 @@ function toggle(key){
   render();
 }
 
-function planningHTML(planning, debutRando){
+function planningHTML(planning, debutRando, resaUrl, resaLabel){
   if(!planning) return '';
   const icons = {train:'🚆', bus:'🚌'};
+  const ficheLabels = {train:'Fiche horaire train', bus:'Fiche horaire'};
   const steps = planning.map(s => `
     <div class="plan-step">
       <span class="plan-icon">${icons[s.type]}</span>
       <div class="plan-body">
         <div class="plan-route">${s.from} → ${s.to}</div>
         <div class="plan-ligne">${s.ligne}</div>
+        <div class="plan-step-links">
+          ${s.ficheUrl ? `<a class="dd-link-mini" href="${s.ficheUrl}" target="_blank" rel="noopener">📄 ${ficheLabels[s.type]}${s.type==='bus' ? ' ('+s.ligne+')' : ''}</a>` : ''}
+          ${s.showResa && resaUrl ? `<a class="dd-link-mini" href="${resaUrl}" target="_blank" rel="noopener">🎫 ${resaLabel}</a>` : ''}
+        </div>
       </div>
       <span class="plan-time">${s.depart} → ${s.arrivee}</span>
     </div>`).join('');
@@ -446,13 +460,8 @@ function cardHTML(r){
               Détail du trajet aller <span class="dropdown-chevron">▾</span>
             </button>
             <div class="dropdown-content ${alOpen?'open':''}">
-              ${planningHTML(r.aller.planning, r.aller.debutRando)}
-              <p style="margin:0 0 8px;">${r.aller.detail}</p>
-              <div class="dropdown-links">
-                <a class="dd-link" href="${r.trainFicheUrl}" target="_blank" rel="noopener">🚆 Fiche horaire train (Lyon↔Grenoble)</a>
-                <a class="dd-link" href="${r.aller.ficheUrl}" target="_blank" rel="noopener">📄 ${r.aller.ficheLabel}</a>
-                <a class="dd-link" href="${r.aller.resaUrl}" target="_blank" rel="noopener">🎫 ${r.aller.resaLabel}</a>
-              </div>
+              ${planningHTML(r.aller.planning, r.aller.debutRando, r.aller.resaUrl, r.aller.resaLabel)}
+              <p style="margin:0 0 0;">${r.aller.detail}</p>
             </div>
           </div>
         </div>
@@ -464,13 +473,8 @@ function cardHTML(r){
               Détail du trajet retour <span class="dropdown-chevron">▾</span>
             </button>
             <div class="dropdown-content ${reOpen?'open':''}">
-              ${planningHTML(r.retour.planning, null)}
-              <p style="margin:0 0 8px;">${r.retour.detail}</p>
-              <div class="dropdown-links">
-                <a class="dd-link" href="${r.trainFicheUrl}" target="_blank" rel="noopener">🚆 Fiche horaire train (Lyon↔Grenoble)</a>
-                <a class="dd-link" href="${r.retour.ficheUrl}" target="_blank" rel="noopener">📄 ${r.retour.ficheLabel}</a>
-                <a class="dd-link" href="${r.retour.resaUrl}" target="_blank" rel="noopener">🎫 ${r.retour.resaLabel}</a>
-              </div>
+              ${planningHTML(r.retour.planning, null, r.retour.resaUrl, r.retour.resaLabel)}
+              <p style="margin:0 0 0;">${r.retour.detail}</p>
             </div>
           </div>
         </div>
