@@ -201,6 +201,11 @@
     width:26px; height:26px; border-radius:50%; background:var(--sec-color); color:#fff;
     display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0;
   }
+  .plan-total{
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--sec-transport);
+    margin-bottom:8px;
+  }
+  .plan-total strong{color:var(--ink);}
   .plan-body{flex:1;}
   .plan-route{font-size:13px; font-weight:600; color:var(--ink);}
   .plan-ligne{font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-soft);}
@@ -423,25 +428,59 @@ function toggle(key){
   render();
 }
 
+function parseTimeMinutes(str){
+  if(!str) return null;
+  const clean = str.replace('~','').trim();
+  if(/^\d{1,2}[h:]\d{0,2}\s*-\s*\d{1,2}[h:]\d{0,2}$/.test(clean)) return null; // plage horaire, pas une heure précise
+  const m = clean.match(/(\d{1,2})[h:](\d{2})/);
+  if(m) return parseInt(m[1],10)*60 + parseInt(m[2],10);
+  const m2 = clean.match(/^(\d{1,2})h$/);
+  if(m2) return parseInt(m2[1],10)*60;
+  return null;
+}
+
+function formatDuration(mins){
+  if(mins < 0) mins += 24*60;
+  const h = Math.floor(mins/60), m = mins % 60;
+  if(h===0) return `${m} min`;
+  if(m===0) return `${h}h`;
+  return `${h}h${String(m).padStart(2,'0')}`;
+}
+
+function stepDuration(depart, arrivee){
+  const d = parseTimeMinutes(depart), a = parseTimeMinutes(arrivee);
+  if(d===null || a===null) return null;
+  return formatDuration(a - d);
+}
+
 function planningHTML(planning, debutRando, resaUrl, resaLabel){
   if(!planning) return '';
   const icons = {train:'🚆', bus:'🚌'};
   const ficheLabels = {train:'Horaires train', bus:'Horaires'};
-  const steps = planning.map(s => `
+  const steps = planning.map(s => {
+    const dur = stepDuration(s.depart, s.arrivee);
+    return `
     <div class="plan-step">
       <span class="plan-icon">${icons[s.type]}</span>
       <div class="plan-body">
         <div class="plan-route">${s.from} → ${s.to}</div>
-        <div class="plan-ligne">${s.ligne}</div>
+        <div class="plan-ligne">${s.ligne}${dur ? ' · '+dur : ''}</div>
         <div class="plan-step-links">
           ${s.ficheUrl ? `<a class="dd-link-mini" href="${s.ficheUrl}" target="_blank" rel="noopener">📄 ${ficheLabels[s.type]}${s.type==='bus' ? ' ('+s.ligne+')' : ''}</a>` : ''}
           ${s.showResa && resaUrl ? `<a class="dd-link-mini" href="${resaUrl}" target="_blank" rel="noopener">🎫 ${resaLabel}</a>` : ''}
         </div>
       </div>
       <span class="plan-time">${s.depart} → ${s.arrivee}</span>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+
+  const firstDep = planning[0] ? parseTimeMinutes(planning[0].depart) : null;
+  const lastArr = planning.length ? parseTimeMinutes(planning[planning.length-1].arrivee) : null;
+  const totalDur = (firstDep!==null && lastArr!==null) ? formatDuration(lastArr - firstDep) : null;
+  const totalLine = totalDur ? `<div class="plan-total">⏱ Durée totale du trajet : <strong>${totalDur}</strong></div>` : '';
+
   const goal = debutRando ? `<div class="plan-goal">🥾 Début de la rando : ${debutRando}</div>` : '';
-  return `<div class="planning">${steps}</div>${goal}`;
+  return `${totalLine}<div class="planning">${steps}</div>${goal}`;
 }
 
 function trajetBlock(t, tag){
