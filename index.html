@@ -462,7 +462,6 @@ function cardHTML(r){
             </button>
             <div class="dropdown-content ${alOpen?'open':''}">
               ${planningHTML(r.aller.planning, r.aller.debutRando, r.aller.resaUrl, r.aller.resaLabel)}
-              <p style="margin:0 0 0;">${r.aller.detail}</p>
             </div>
           </div>
         </div>
@@ -475,7 +474,6 @@ function cardHTML(r){
             </button>
             <div class="dropdown-content ${reOpen?'open':''}">
               ${planningHTML(r.retour.planning, null, r.retour.resaUrl, r.retour.resaLabel)}
-              <p style="margin:0 0 0;">${r.retour.detail}</p>
             </div>
           </div>
         </div>
