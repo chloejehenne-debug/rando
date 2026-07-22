@@ -167,6 +167,22 @@
   .maps-link{font-size:13px; color:var(--sec-transport); text-decoration:none; display:inline-flex; align-items:center; gap:5px;}
   .maps-link:hover{text-decoration:underline;}
 
+  .planning{margin:2px 0 12px;}
+  .plan-step{display:flex; align-items:flex-start; gap:10px; padding:7px 0;}
+  .plan-step:not(:last-child){border-bottom:1px dashed var(--sec-line);}
+  .plan-icon{
+    width:26px; height:26px; border-radius:50%; background:var(--sec-color); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0;
+  }
+  .plan-body{flex:1;}
+  .plan-route{font-size:13px; font-weight:600; color:var(--ink);}
+  .plan-ligne{font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-soft);}
+  .plan-time{font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:13px; color:var(--sec-color); white-space:nowrap;}
+  .plan-goal{
+    display:flex; align-items:center; gap:8px; margin-top:4px;
+    font-size:13px; font-weight:700; color:var(--sec-refuge);
+    background:var(--sec-refuge-soft); padding:8px 11px; border-radius:8px;
+  }
   .dropdown-toggle{
     width:100%; text-align:left; background:none; border:none; cursor:pointer;
     font-family:'Work Sans', sans-serif; font-size:12.5px; font-weight:600;
@@ -239,11 +255,20 @@ const REFUGES = [
       texte:"Montée par les lacs Robert jusqu'au refuge (source FFCAM/Chamrousse). Version courte via télécabine de la Croix de Chamrousse (3h, ~250 m restants)."},
   j2:{km:'9 km', dplus:'+150 m', dminus:'-850 m', duree:'~4h',
       texte:"Boucle possible par le lac Léama et le lac Longet au retour vers le Recoin."},
-  aller:{depart:'Grenoble Gare Routière', arrivee:'Chamrousse 1650 - Recoin', heureDepart:'~08:00', heureArrivee:'~09:15',
+  aller:{depart:'Lyon Part-Dieu', arrivee:'Chamrousse 1650 - Recoin', heureDepart:'~05:21', heureArrivee:'~09:15',
+         planning:[
+           {type:'train', ligne:'TER Lyon↔Grenoble', from:'Lyon Part-Dieu', to:'Grenoble', depart:'~05:21', arrivee:'~06:44'},
+           {type:'bus', ligne:'N93', from:'Grenoble Gare Routière', to:'Chamrousse 1650 - Recoin', depart:'~08:00', arrivee:'~09:15'}
+         ],
+         debutRando:'~09:15 (créneau le plus tôt disponible — pas d\'option calée sur 11h côté N93)',
          detail:'Ligne N93 (réseau M réso), trajet direct sans correspondance. Horaires grille été 2026 publiés en image (non extractibles) — motif 2025 utilisé comme référence, à confirmer.',
          ficheUrl:'https://www.chamrousse.com/bus-ete.html', ficheLabel:'Fiche horaire N93',
          resaUrl:'https://www.bus-et-clic.com/mreso', resaLabel:'Réserver (Bus et Clic)'},
-  retour:{depart:'Chamrousse 1650 - Recoin', arrivee:'Grenoble Gare Routière', heureDepart:'~15:20', heureArrivee:'~16:35',
+  retour:{depart:'Chamrousse 1650 - Recoin', arrivee:'Lyon Part-Dieu', heureDepart:'~15:20', heureArrivee:'~18:14',
+          planning:[
+            {type:'bus', ligne:'N93', from:'Chamrousse 1650 - Recoin', to:'Grenoble Gare Routière', depart:'~15:20', arrivee:'~16:35'},
+            {type:'train', ligne:'TER Lyon↔Grenoble', from:'Grenoble', to:'Lyon Part-Dieu', depart:'16:51', arrivee:'~18:14'}
+          ],
           detail:'Ligne N93, trajet direct. Tarif : 10 € l\'aller simple / 12 € l\'aller-retour.',
           ficheUrl:'https://www.chamrousse.com/bus-ete.html', ficheLabel:'Fiche horaire N93',
           resaUrl:'https://www.bus-et-clic.com/mreso', resaLabel:'Réserver (Bus et Clic)'}
@@ -259,11 +284,20 @@ const REFUGES = [
       texte:"Départ du village d'Engins (935 m), montée par le GR9 jusqu'au point de vue de la Molière (1632 m, table d'orientation 360°)."},
   j2:{km:'5 km', dplus:'+35 m', dminus:'-639 m', duree:'~2h',
       texte:"Traversée de l'alpage, variante possible par le Pas de l'Ours (1649 m). Descente par la piste forestière vers Engins."},
-  aller:{depart:'Grenoble Gare Routière', arrivee:'Engins, les Jaux', heureDepart:'07:40', heureArrivee:'08:16',
-         detail:'Ligne T64, trajet direct sans correspondance. Alternative : départ 10:30, arrivée 11:06.',
+  aller:{depart:'Lyon Part-Dieu', arrivee:'Engins, les Jaux', heureDepart:'~08:44', heureArrivee:'11:06',
+         planning:[
+           {type:'train', ligne:'TER Lyon↔Grenoble', from:'Lyon Part-Dieu', to:'Grenoble', depart:'~08:44', arrivee:'~10:10'},
+           {type:'bus', ligne:'T64', from:'Grenoble Gare Routière', to:'Engins, les Jaux', depart:'10:30', arrivee:'11:06'}
+         ],
+         debutRando:'~11:06 — pile dans la cible de 11h',
+         detail:'Ligne T64, trajet direct sans correspondance. Alternative plus matinale : départ 07:40, arrivée 08:16.',
          ficheUrl:'https://www.vercors-experience.com/medias/documents/Horaires_T64_-_2025-26.pdf', ficheLabel:'Fiche horaire T64',
          resaUrl:'https://boutique.oura.com/fr/home', resaLabel:'Acheter le billet (Oùra)'},
-  retour:{depart:'Engins, les Jaux', arrivee:'Grenoble Gare Routière', heureDepart:'16:57', heureArrivee:'17:35',
+  retour:{depart:'Engins, les Jaux', arrivee:'Lyon Part-Dieu', heureDepart:'16:57', heureArrivee:'~19:15',
+          planning:[
+            {type:'bus', ligne:'T64', from:'Engins, les Jaux', to:'Grenoble Gare Routière', depart:'16:57', arrivee:'17:35'},
+            {type:'train', ligne:'TER Lyon↔Grenoble', from:'Grenoble', to:'Lyon Part-Dieu', depart:'17:51', arrivee:'~19:15'}
+          ],
           detail:'Ligne T64, trajet direct. Horaires exacts confirmés sur la grille "toute l\'année".',
           ficheUrl:'https://www.vercors-experience.com/medias/documents/Horaires_T64_-_2025-26.pdf', ficheLabel:'Fiche horaire T64',
           resaUrl:'https://boutique.oura.com/fr/home', resaLabel:'Acheter le billet (Oùra)'}
@@ -279,11 +313,22 @@ const REFUGES = [
       texte:"Depuis le centre d'Autrans, via le Bouchet, la cascade (1131 m), la Combe Payraud jusqu'au Pas de l'Ours (1649 m), la crête de Charande (1709 m), puis le Pas du Tracollet jusqu'au refuge."},
   j2:{km:'7 km', dplus:'+143 m', dminus:'-663 m', duree:'~2h30-3h',
       texte:"Redescente directe vers Autrans par un chemin différent de l'aller, vue sur le village encore endormi."},
-  aller:{depart:'Grenoble Gare Routière', arrivee:'Autrans (village)', heureDepart:'09:55', heureArrivee:'~11:35',
+  aller:{depart:'Lyon Part-Dieu', arrivee:'Autrans (village)', heureDepart:'~08:16', heureArrivee:'~11:35',
+         planning:[
+           {type:'train', ligne:'TER Lyon↔Grenoble', from:'Lyon Part-Dieu', to:'Grenoble', depart:'~08:16', arrivee:'~09:39'},
+           {type:'bus', ligne:'T65', from:'Grenoble Gare Routière', to:'Lans-en-Vercors OT', depart:'09:55', arrivee:'10:47'},
+           {type:'bus', ligne:'T66', from:'Lans-en-Vercors OT', to:'Autrans (village)', depart:'11:20', arrivee:'~11:35'}
+         ],
+         debutRando:'~11:35 — proche de la cible de 11h',
          detail:"T65 Grenoble→Lans-en-Vercors (09:55→10:47), correspondance à Lans-en-Vercors \"Office de Tourisme\" avec le T66 (départ confirmé le samedi à 11:20) → Autrans.",
          ficheUrl:'https://www.vercors-experience.com/medias/documents/Horaires_T66_2025-26.pdf', ficheLabel:'Fiche horaire T66',
          resaUrl:'https://boutique.oura.com/fr/home', resaLabel:'Acheter le billet (Oùra)'},
-  retour:{depart:'Autrans (village)', arrivee:'Grenoble Gare Routière', heureDepart:'~16:00', heureArrivee:'~17:15',
+  retour:{depart:'Autrans (village)', arrivee:'Lyon Part-Dieu', heureDepart:'~16:00', heureArrivee:'~18:44',
+          planning:[
+            {type:'bus', ligne:'T66', from:'Autrans (village)', to:'Lans-en-Vercors OT', depart:'~16:00', arrivee:'~16:15'},
+            {type:'bus', ligne:'T65', from:'Lans-en-Vercors OT', to:'Grenoble Gare Routière', depart:'~16:55', arrivee:'~17:15'},
+            {type:'train', ligne:'TER Lyon↔Grenoble', from:'Grenoble', to:'Lyon Part-Dieu', depart:'17:21', arrivee:'~18:44'}
+          ],
           detail:"T66 Autrans→Lans-en-Vercors puis correspondance T65→Grenoble. Horaire retour à confirmer précisément (grille T66 retour non extraite avec certitude).",
           ficheUrl:'https://www.vercors-experience.com/medias/documents/Horaires_T65_-_2025-26.pdf', ficheLabel:'Fiche horaire T65',
           resaUrl:'https://boutique.oura.com/fr/home', resaLabel:'Acheter le billet (Oùra)'}
@@ -299,11 +344,22 @@ const REFUGES = [
       texte:"Depuis le parking des pistes de ski alpin de Méaudre, montée par la Combe du Furon jusqu'au carrefour de la Vira (1380 m), puis le Gros Martel (1556 m)."},
   j2:{km:'3 km', dplus:'+0 m', dminus:'-307 m', duree:'~1h',
       texte:"Redescente vers Méaudre en passant par le point de vue du Crêt (1335 m)."},
-  aller:{depart:'Grenoble Gare Routière', arrivee:'Méaudre (village)', heureDepart:'09:55', heureArrivee:'~11:35',
+  aller:{depart:'Lyon Part-Dieu', arrivee:'Méaudre (village)', heureDepart:'~08:16', heureArrivee:'~11:35',
+         planning:[
+           {type:'train', ligne:'TER Lyon↔Grenoble', from:'Lyon Part-Dieu', to:'Grenoble', depart:'~08:16', arrivee:'~09:39'},
+           {type:'bus', ligne:'T65', from:'Grenoble Gare Routière', to:'Lans-en-Vercors OT', depart:'09:55', arrivee:'10:47'},
+           {type:'bus', ligne:'T66', from:'Lans-en-Vercors OT', to:'Méaudre (village)', depart:'11:20', arrivee:'~11:35'}
+         ],
+         debutRando:'~11:35 — proche de la cible de 11h',
          detail:"T65 Grenoble→Lans-en-Vercors (09:55→10:47), correspondance T66 (11:20 confirmé samedi) → Méaudre.",
          ficheUrl:'https://www.vercors-experience.com/medias/documents/Horaires_T66_2025-26.pdf', ficheLabel:'Fiche horaire T66',
          resaUrl:'https://boutique.oura.com/fr/home', resaLabel:'Acheter le billet (Oùra)'},
-  retour:{depart:'Méaudre (village)', arrivee:'Grenoble Gare Routière', heureDepart:'~16:00', heureArrivee:'~17:15',
+  retour:{depart:'Méaudre (village)', arrivee:'Lyon Part-Dieu', heureDepart:'~16:00', heureArrivee:'~18:44',
+          planning:[
+            {type:'bus', ligne:'T66', from:'Méaudre (village)', to:'Lans-en-Vercors OT', depart:'~16:00', arrivee:'~16:20'},
+            {type:'bus', ligne:'T65', from:'Lans-en-Vercors OT', to:'Grenoble Gare Routière', depart:'~16:55', arrivee:'~17:15'},
+            {type:'train', ligne:'TER Lyon↔Grenoble', from:'Grenoble', to:'Lyon Part-Dieu', depart:'17:21', arrivee:'~18:44'}
+          ],
           detail:"T66 Méaudre→Lans-en-Vercors puis correspondance T65→Grenoble. Horaire retour à confirmer précisément.",
           ficheUrl:'https://www.vercors-experience.com/medias/documents/Horaires_T65_-_2025-26.pdf', ficheLabel:'Fiche horaire T65',
           resaUrl:'https://boutique.oura.com/fr/home', resaLabel:'Acheter le billet (Oùra)'}
@@ -319,11 +375,22 @@ const REFUGES = [
       texte:"Depuis le parking de Gève (Autrans), vagabonder entre forêt et plaine sur le plateau de Gève (1289 m), domaine de ski nordique en hiver."},
   j2:{km:'4 km', dplus:'+98 m', dminus:'-266 m', duree:'~1h-1h30',
       texte:"Sentiers familiaux, passage par le stade de biathlon \"David Moretti\" avant de rejoindre Autrans."},
-  aller:{depart:'Grenoble Gare Routière', arrivee:'Autrans (village)', heureDepart:'10:30', heureArrivee:'~11:35',
+  aller:{depart:'Lyon Part-Dieu', arrivee:'Autrans (village)', heureDepart:'~08:44', heureArrivee:'~11:35',
+         planning:[
+           {type:'train', ligne:'TER Lyon↔Grenoble', from:'Lyon Part-Dieu', to:'Grenoble', depart:'~08:44', arrivee:'~10:10'},
+           {type:'bus', ligne:'T64', from:'Grenoble Gare Routière', to:'Lans-en-Vercors OT', depart:'10:30', arrivee:'11:13'},
+           {type:'bus', ligne:'T66', from:'Lans-en-Vercors OT', to:'Autrans (village)', depart:'11:20', arrivee:'~11:35'}
+         ],
+         debutRando:'~11:35 — proche de la cible de 11h',
          detail:"T64 Grenoble→Lans-en-Vercors (10:30→11:13), correspondance T66 (11:20 confirmé samedi) → Autrans.",
          ficheUrl:'https://www.vercors-experience.com/medias/documents/Horaires_T66_2025-26.pdf', ficheLabel:'Fiche horaire T66',
          resaUrl:'https://boutique.oura.com/fr/home', resaLabel:'Acheter le billet (Oùra)'},
-  retour:{depart:'Autrans (village)', arrivee:'Grenoble Gare Routière', heureDepart:'~16:00', heureArrivee:'~17:35',
+  retour:{depart:'Autrans (village)', arrivee:'Lyon Part-Dieu', heureDepart:'~16:00', heureArrivee:'~19:15',
+          planning:[
+            {type:'bus', ligne:'T66', from:'Autrans (village)', to:'Lans-en-Vercors OT', depart:'~16:00', arrivee:'~16:15'},
+            {type:'bus', ligne:'T64', from:'Lans-en-Vercors OT', to:'Grenoble Gare Routière', depart:'~17:15', arrivee:'~17:35'},
+            {type:'train', ligne:'TER Lyon↔Grenoble', from:'Grenoble', to:'Lyon Part-Dieu', depart:'17:51', arrivee:'~19:15'}
+          ],
           detail:"T66 Autrans→Lans-en-Vercors puis correspondance T64→Grenoble. Horaire retour à confirmer précisément.",
           ficheUrl:'https://www.vercors-experience.com/medias/documents/Horaires_T64_-_2025-26.pdf', ficheLabel:'Fiche horaire T64',
           resaUrl:'https://boutique.oura.com/fr/home', resaLabel:'Acheter le billet (Oùra)'}
@@ -339,11 +406,20 @@ const REFUGES = [
       texte:"Bus Zou 55 (réservation 36h avant) jusqu'au Col du Lautaret (2058 m). Montée par le Sentier des Crevasses (passage équipé de chaînes sur 50 m) jusqu'au refuge (2071 m)."},
   j2:{km:'~5 km', dplus:'+20 m', dminus:'-400 m', duree:'~2h',
       texte:"Descente vers Villar-d'Arène par le Pont d'Arsine."},
-  aller:{depart:'Grenoble Gare Routière', arrivee:'Col du Lautaret', heureDepart:'~07h-09h', heureArrivee:'~09h30-11h30',
+  aller:{depart:'Lyon Part-Dieu', arrivee:'Col du Lautaret', heureDepart:'~06:50', heureArrivee:'~10:15',
+         planning:[
+           {type:'train', ligne:'TER Lyon↔Grenoble', from:'Lyon Part-Dieu', to:'Grenoble', depart:'~06:50', arrivee:'~08:09'},
+           {type:'bus', ligne:'Zou 55', from:'Grenoble Gare Routière', to:'Col du Lautaret', depart:'~08:30', arrivee:'~10:15'}
+         ],
+         debutRando:'~10:15-11h selon le service réel — à confirmer, horaires Zou 55 non figés dans une grille fixe',
          detail:"Ligne Zou 55 (Grenoble↔Briançon, réseau Sud). Réservation obligatoire 36h à l'avance, pas de réservation le jour même.",
          ficheUrl:'https://itineraires-zou.maregionsud.fr/fr/horaires/Zou%20!%20Express/BUS/ligne/55/direction/OUTWARD/14554', ficheLabel:'Fiche horaire Zou 55',
          resaUrl:'https://www.reservation-zou-resalp.fr/lignes/55-briancon-grenoble/', resaLabel:'Réserver (Zou Résalp)'},
-  retour:{depart:"Villar-d'Arène", arrivee:'Grenoble Gare Routière', heureDepart:'~16h-18h', heureArrivee:'~18h-20h',
+  retour:{depart:"Villar-d'Arène", arrivee:'Lyon Part-Dieu', heureDepart:'~16h-18h', heureArrivee:'~19:45-21:45',
+          planning:[
+            {type:'bus', ligne:'Zou 55', from:"Villar-d'Arène", to:'Grenoble Gare Routière', depart:'~16h-18h', arrivee:'~18h-20h'},
+            {type:'train', ligne:'TER Lyon↔Grenoble', from:'Grenoble', to:'Lyon Part-Dieu', depart:'~18:21-20:21', arrivee:'~19:45-21:45'}
+          ],
           detail:"Ligne Zou 55. Réservation avant le vendredi 16h pour un trajet dimanche/lundi.",
           ficheUrl:'https://itineraires-zou.maregionsud.fr/fr/horaires/Zou%20!%20Express/BUS/ligne/55/direction/OUTWARD/14554', ficheLabel:'Fiche horaire Zou 55',
           resaUrl:'https://www.reservation-zou-resalp.fr/lignes/55-briancon-grenoble/', resaLabel:'Réserver (Zou Résalp)'}
@@ -361,6 +437,22 @@ let openStates = {};
 function toggle(key){
   openStates[key] = !openStates[key];
   render();
+}
+
+function planningHTML(planning, debutRando){
+  if(!planning) return '';
+  const icons = {train:'🚆', bus:'🚌'};
+  const steps = planning.map(s => `
+    <div class="plan-step">
+      <span class="plan-icon">${icons[s.type]}</span>
+      <div class="plan-body">
+        <div class="plan-route">${s.from} → ${s.to}</div>
+        <div class="plan-ligne">${s.ligne}</div>
+      </div>
+      <span class="plan-time">${s.depart} → ${s.arrivee}</span>
+    </div>`).join('');
+  const goal = debutRando ? `<div class="plan-goal">🥾 Début de la rando : ${debutRando}</div>` : '';
+  return `<div class="planning">${steps}</div>${goal}`;
 }
 
 function trajetBlock(t, tag){
@@ -437,6 +529,7 @@ function cardHTML(r){
               Détail du trajet aller <span class="dropdown-chevron">▾</span>
             </button>
             <div class="dropdown-content ${alOpen?'open':''}">
+              ${planningHTML(r.aller.planning, r.aller.debutRando)}
               <p style="margin:0 0 8px;">${r.aller.detail}</p>
               <div class="dropdown-links">
                 <a class="dd-link" href="${r.trainFicheUrl}" target="_blank" rel="noopener">🚆 Fiche horaire train (Lyon↔Grenoble)</a>
@@ -454,6 +547,7 @@ function cardHTML(r){
               Détail du trajet retour <span class="dropdown-chevron">▾</span>
             </button>
             <div class="dropdown-content ${reOpen?'open':''}">
+              ${planningHTML(r.retour.planning, null)}
               <p style="margin:0 0 8px;">${r.retour.detail}</p>
               <div class="dropdown-links">
                 <a class="dd-link" href="${r.trainFicheUrl}" target="_blank" rel="noopener">🚆 Fiche horaire train (Lyon↔Grenoble)</a>
