@@ -149,6 +149,10 @@
     font-family:'IBM Plex Mono', monospace; font-size:11.5px; font-weight:600;
     text-transform:uppercase; letter-spacing:0.07em; color:var(--sec-color);
   }
+  .section-summary{
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; font-weight:600;
+    color:var(--ink); margin-left:auto;
+  }
   .section-body{padding:14px 16px 16px;}
 
   .day-stats{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;}
@@ -461,6 +465,19 @@ function parsePrix(str){
   return parseFloat(m[1].replace(',', '.'));
 }
 
+function computeTrajetTotal(planning){
+  if(!planning || !planning.length) return {dur: null, prix: null, hasEstimation: false};
+  const firstDep = parseTimeMinutes(planning[0].depart);
+  const lastArr = parseTimeMinutes(planning[planning.length-1].arrivee);
+  const dur = (firstDep!==null && lastArr!==null) ? (lastArr - firstDep) : null;
+
+  const prixValues = planning.map(s => parsePrix(s.prix)).filter(v => v !== null);
+  const hasEstimation = planning.some(s => s.prix && s.prix.includes('estimation'));
+  const prix = prixValues.length ? prixValues.reduce((a,b)=>a+b, 0) : null;
+
+  return {dur, prix, hasEstimation};
+}
+
 function planningHTML(planning, debutRando, resaUrl, resaLabel){
   if(!planning) return '';
   const icons = {train:'🚆', bus:'🚌'};
@@ -482,17 +499,10 @@ function planningHTML(planning, debutRando, resaUrl, resaLabel){
     </div>`;
   }).join('');
 
-  const firstDep = planning[0] ? parseTimeMinutes(planning[0].depart) : null;
-  const lastArr = planning.length ? parseTimeMinutes(planning[planning.length-1].arrivee) : null;
-  const totalDur = (firstDep!==null && lastArr!==null) ? formatDuration(lastArr - firstDep) : null;
-
-  const prixValues = planning.map(s => parsePrix(s.prix)).filter(v => v !== null);
-  const hasEstimation = planning.some(s => s.prix && s.prix.includes('estimation'));
-  const totalPrix = prixValues.length ? prixValues.reduce((a,b)=>a+b, 0) : null;
-
+  const t = computeTrajetTotal(planning);
   const totalBits = [];
-  if(totalDur) totalBits.push(`⏱ <strong>${totalDur}</strong>`);
-  if(totalPrix !== null) totalBits.push(`💶 <strong>${totalPrix.toFixed(2).replace('.',',')} €</strong>${hasEstimation ? ' (estimation)' : ''}`);
+  if(t.dur!==null) totalBits.push(`⏱ <strong>${formatDuration(t.dur)}</strong>`);
+  if(t.prix !== null) totalBits.push(`💶 <strong>${t.prix.toFixed(2).replace('.',',')} €</strong>${t.hasEstimation ? ' (estimation)' : ''}`);
   const totalLine = totalBits.length ? `<div class="plan-total">${totalBits.join(' &nbsp;·&nbsp; ')}</div>` : '';
 
   const goal = debutRando ? `<div class="plan-goal">🥾 Début de la rando : ${debutRando}</div>` : '';
@@ -514,6 +524,16 @@ function cardHTML(r){
   const alOpen = openStates[r.id+'-aller'];
   const reOpen = openStates[r.id+'-retour'];
   const rfOpen = openStates[r.id+'-refuge'];
+
+  const allerTotal = computeTrajetTotal(r.aller.planning);
+  const retourTotal = computeTrajetTotal(r.retour.planning);
+  const combinedDur = (allerTotal.dur!==null && retourTotal.dur!==null) ? allerTotal.dur + retourTotal.dur : null;
+  const combinedPrix = (allerTotal.prix!==null && retourTotal.prix!==null) ? allerTotal.prix + retourTotal.prix : null;
+  const combinedEstimation = allerTotal.hasEstimation || retourTotal.hasEstimation;
+  const transportSummaryBits = [];
+  if(combinedDur!==null) transportSummaryBits.push(`⏱ ${formatDuration(combinedDur)}`);
+  if(combinedPrix!==null) transportSummaryBits.push(`💶 ${combinedPrix.toFixed(2).replace('.',',')} €${combinedEstimation ? ' (est.)' : ''}`);
+  const transportSummary = transportSummaryBits.length ? `<span class="section-summary">${transportSummaryBits.join(' · ')}</span>` : '';
 
   return `
   <div class="card" style="--massif-color:${mc.color}; --massif-soft:${mc.soft};">
@@ -564,6 +584,7 @@ function cardHTML(r){
       <div class="section-head">
         <span class="section-icon">🚌</span>
         <span class="section-label">Transport</span>
+        ${transportSummary}
       </div>
       <div class="section-body">
         <div class="trajet-group">
