@@ -382,6 +382,7 @@ async function loadRefuges(){
       return {
         id: it.id,
         nom: ri.nom, massif: ri.massif, altitude: ri.altitude,
+        titreRando: it.titre_rando || ri.nom,
         adresse: ri.adresse, mapsUrl: ri.maps_url,
         prixLabel: ri.prix_demi_pension,
         ouvertureDebut: fmtDate(ri.ouverture_debut), ouvertureFin: fmtDate(ri.ouverture_fin),
@@ -518,7 +519,7 @@ function cardHTML(r){
   <div class="card" style="--massif-color:${mc.color}; --massif-soft:${mc.soft};">
     <div class="card-head">
       <span class="massif-badge">${r.massif}</span>
-      <h3 class="card-title">${r.nom}</h3>
+      <h3 class="card-title">${r.titreRando}</h3>
       <span class="card-alt">${r.altitude}</span>
     </div>
 
