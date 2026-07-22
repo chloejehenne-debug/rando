@@ -243,7 +243,7 @@
 </div>
 
 <script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 // ============================================
 // Connexion Supabase — remplace ces 2 valeurs
@@ -252,6 +252,12 @@
 const SUPABASE_URL = 'https://xomfsciqbljjfzrzjilz.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhvbWZzY2lxYmxqamZ6cnpqaWx6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1NDE5NTcsImV4cCI6MjEwMDExNzk1N30.rNuei181sRq96a_nAtaK_UOHpmE1sHNSSCW_29KaPXE';
 
+if(!window.supabase){
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('grid').innerHTML = '<p style="font-family:\'IBM Plex Mono\',monospace;color:var(--sec-refuge);padding:40px 0;">Le script Supabase (CDN) n\'a pas pu se charger — vérifie ta connexion, désactive un éventuel bloqueur de pub/vie privée pour ce site, puis recharge la page.</p>';
+  });
+  throw new Error('window.supabase indisponible — le CDN Supabase ne s\'est pas chargé.');
+}
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let REFUGES = [];
