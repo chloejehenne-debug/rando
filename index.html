@@ -163,6 +163,9 @@
     font-family:'IBM Plex Mono', monospace; font-size:11.5px; font-weight:600;
     color:var(--ink); margin-left:auto;
   }
+  .section-chevron{
+    font-size:12px; color:var(--sec-color); margin-left:auto; flex-shrink:0;
+  }
   .section-body{padding:14px 16px 16px;}
 
   .day-stats{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;}
@@ -515,12 +518,22 @@ function trajetBlock(t, tag){
   </div>`;
 }
 
+function toggleSection(key){
+  const current = openStates[key] !== false; // ouvert par défaut
+  openStates[key] = !current;
+  render();
+}
+
 function cardHTML(r){
   const mc = MASSIF_COLORS[r.massif];
   const itOpen = openStates[r.id+'-itineraire'];
   const alOpen = openStates[r.id+'-aller'];
   const reOpen = openStates[r.id+'-retour'];
   const rfOpen = openStates[r.id+'-refuge'];
+
+  const secItOpen = openStates[r.id+'-sec-itineraire'] !== false;
+  const secTrOpen = openStates[r.id+'-sec-transport'] !== false;
+  const secRfOpen = openStates[r.id+'-sec-refuge'] !== false;
 
   const allerTotal = computeTrajetTotal(r.aller.planning);
   const retourTotal = computeTrajetTotal(r.retour.planning);
@@ -541,11 +554,12 @@ function cardHTML(r){
     </div>
 
     <div class="section" style="--sec-color:var(--accent); --sec-soft:var(--accent-soft); --sec-line:var(--accent-line);">
-      <div class="section-head">
+      <div class="section-head" onclick="toggleSection('${r.id}-sec-itineraire')" style="cursor:pointer;">
         <span class="section-icon">↝</span>
         <span class="section-label">Itinéraire</span>
+        <span class="section-chevron">${secItOpen ? '▾' : '▸'}</span>
       </div>
-      <div class="section-body">
+      <div class="section-body" style="${secItOpen ? '' : 'display:none;'}">
         <div class="day-stats">
           <div class="day-stat-col">
             <span class="day-stat-tag">Jour 1</span>
@@ -578,12 +592,13 @@ function cardHTML(r){
     </div>
 
     <div class="section" style="--sec-color:var(--accent); --sec-soft:var(--accent-soft); --sec-line:var(--accent-line);">
-      <div class="section-head">
+      <div class="section-head" onclick="toggleSection('${r.id}-sec-transport')" style="cursor:pointer;">
         <span class="section-icon">🚌</span>
         <span class="section-label">Transport</span>
         ${transportSummary}
+        <span class="section-chevron">${secTrOpen ? '▾' : '▸'}</span>
       </div>
-      <div class="section-body">
+      <div class="section-body" style="${secTrOpen ? '' : 'display:none;'}">
         <div class="trajet-group">
           ${trajetBlock(r.aller, 'Trajet aller')}
           <div class="trajet-footer">
@@ -611,11 +626,12 @@ function cardHTML(r){
     </div>
 
     <div class="section" style="--sec-color:var(--accent); --sec-soft:var(--accent-soft); --sec-line:var(--accent-line);">
-      <div class="section-head">
+      <div class="section-head" onclick="toggleSection('${r.id}-sec-refuge')" style="cursor:pointer;">
         <span class="section-icon">🏔</span>
         <span class="section-label">Refuge</span>
+        <span class="section-chevron">${secRfOpen ? '▾' : '▸'}</span>
       </div>
-      <div class="section-body">
+      <div class="section-body" style="${secRfOpen ? '' : 'display:none;'}">
         <div class="refuge-row">
           <div>
             <div class="refuge-name">${r.nom}</div>
