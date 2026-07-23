@@ -436,7 +436,8 @@ const MASSIF_COLORS = {
 let openStates = {};
 
 function toggle(key){
-  openStates[key] = !openStates[key];
+  const current = openStates[key] !== false; // ouvert par défaut
+  openStates[key] = !current;
   render();
 }
 
@@ -551,21 +552,21 @@ function trajetBlock(t, tag){
 }
 
 function toggleSection(key){
-  const current = openStates[key] !== false; // ouvert par défaut
+  const current = openStates[key] === true; // fermé par défaut
   openStates[key] = !current;
   render();
 }
 
 function cardHTML(r){
   const mc = MASSIF_COLORS[r.massif];
-  const itOpen = openStates[r.id+'-itineraire'];
-  const alOpen = openStates[r.id+'-aller'];
-  const reOpen = openStates[r.id+'-retour'];
-  const rfOpen = openStates[r.id+'-refuge'];
+  const itOpen = openStates[r.id+'-itineraire'] !== false;
+  const alOpen = openStates[r.id+'-aller'] !== false;
+  const reOpen = openStates[r.id+'-retour'] !== false;
+  const rfOpen = openStates[r.id+'-refuge'] !== false;
 
-  const secItOpen = openStates[r.id+'-sec-itineraire'] !== false;
-  const secTrOpen = openStates[r.id+'-sec-transport'] !== false;
-  const secRfOpen = openStates[r.id+'-sec-refuge'] !== false;
+  const secItOpen = openStates[r.id+'-sec-itineraire'] === true;
+  const secTrOpen = openStates[r.id+'-sec-transport'] === true;
+  const secRfOpen = openStates[r.id+'-sec-refuge'] === true;
 
   // Résumé Itinéraire : distance totale + temps de marche total (J1+J2)
   const j1km = parseKm(r.j1.km), j2km = parseKm(r.j2.km);
