@@ -345,6 +345,7 @@ function mapTrajet(t){
     detail: t.detail,
     resaUrl: t.resa_url, resaLabel: t.resa_label,
     debutRando: t.debut_rando,
+    dureeTotale: t.duree_totale, prixTotal: t.prix_total,
     planning: etapesSorted.map(e => ({
       type: e.type, ligne: e.ligne, from: e.depuis, to: e.vers,
       depart: e.heure_depart, arrivee: e.heure_arrivee,
@@ -471,6 +472,13 @@ function parsePrix(str){
   return parseFloat(m[1].replace(',', '.'));
 }
 
+function parseDureeStr(str){
+  if(!str || str === 'Variable') return null;
+  const m = str.match(/(\d+)h(\d{2})?/);
+  if(!m) return null;
+  return parseInt(m[1],10)*60 + (m[2] ? parseInt(m[2],10) : 0);
+}
+
 function computeTrajetTotal(planning){
   if(!planning || !planning.length) return {dur: null, prix: null, hasEstimation: false};
   const firstDep = parseTimeMinutes(planning[0].depart);
@@ -535,11 +543,13 @@ function cardHTML(r){
   const secTrOpen = openStates[r.id+'-sec-transport'] !== false;
   const secRfOpen = openStates[r.id+'-sec-refuge'] !== false;
 
-  const allerTotal = computeTrajetTotal(r.aller.planning);
-  const retourTotal = computeTrajetTotal(r.retour.planning);
-  const combinedDur = (allerTotal.dur!==null && retourTotal.dur!==null) ? allerTotal.dur + retourTotal.dur : null;
-  const combinedPrix = (allerTotal.prix!==null && retourTotal.prix!==null) ? allerTotal.prix + retourTotal.prix : null;
-  const combinedEstimation = allerTotal.hasEstimation || retourTotal.hasEstimation;
+  const allerDurMin = parseDureeStr(r.aller.dureeTotale);
+  const retourDurMin = parseDureeStr(r.retour.dureeTotale);
+  const combinedDur = (allerDurMin!==null && retourDurMin!==null) ? allerDurMin + retourDurMin : null;
+  const allerPrix = parsePrix(r.aller.prixTotal);
+  const retourPrix = parsePrix(r.retour.prixTotal);
+  const combinedPrix = (allerPrix!==null && retourPrix!==null) ? allerPrix + retourPrix : null;
+  const combinedEstimation = (r.aller.prixTotal && r.aller.prixTotal.includes('estimation')) || (r.retour.prixTotal && r.retour.prixTotal.includes('estimation'));
   const transportSummaryBits = [];
   if(combinedDur!==null) transportSummaryBits.push(`⏱ ${formatDuration(combinedDur)}`);
   if(combinedPrix!==null) transportSummaryBits.push(`💶 ${combinedPrix.toFixed(2).replace('.',',')} €${combinedEstimation ? ' (est.)' : ''}`);
@@ -553,7 +563,7 @@ function cardHTML(r){
       <span class="card-alt">${r.altitude}</span>
     </div>
 
-    <div class="section" style="--sec-color:var(--accent); --sec-soft:var(--accent-soft); --sec-line:var(--accent-line);">
+    <div class="section" style="--sec-color:var(--ink); --sec-soft:#F5F4EE; --sec-line:var(--line);">
       <div class="section-head" onclick="toggleSection('${r.id}-sec-itineraire')" style="cursor:pointer;">
         <span class="section-icon">↝</span>
         <span class="section-label">Itinéraire</span>
@@ -591,7 +601,7 @@ function cardHTML(r){
       </div>
     </div>
 
-    <div class="section" style="--sec-color:var(--accent); --sec-soft:var(--accent-soft); --sec-line:var(--accent-line);">
+    <div class="section" style="--sec-color:var(--ink); --sec-soft:#F5F4EE; --sec-line:var(--line);">
       <div class="section-head" onclick="toggleSection('${r.id}-sec-transport')" style="cursor:pointer;">
         <span class="section-icon">🚌</span>
         <span class="section-label">Transport</span>
@@ -625,7 +635,7 @@ function cardHTML(r){
       </div>
     </div>
 
-    <div class="section" style="--sec-color:var(--accent); --sec-soft:var(--accent-soft); --sec-line:var(--accent-line);">
+    <div class="section" style="--sec-color:var(--ink); --sec-soft:#F5F4EE; --sec-line:var(--line);">
       <div class="section-head" onclick="toggleSection('${r.id}-sec-refuge')" style="cursor:pointer;">
         <span class="section-icon">🏔</span>
         <span class="section-label">Refuge</span>
