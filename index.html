@@ -465,6 +465,30 @@ function stepDuration(depart, arrivee){
   return formatDuration(a - d);
 }
 
+function parseKm(str){
+  if(!str) return null;
+  const nums = (str.match(/[\d]+[.,]?[\d]*/g) || []).map(n => parseFloat(n.replace(',','.')));
+  if(!nums.length) return null;
+  return nums.reduce((a,b)=>a+b,0) / nums.length; // moyenne si plage (ex: "4-5 km")
+}
+
+function parseDureeRange(str){
+  if(!str) return null;
+  const toks = str.match(/(\d+)h(\d{2})?/g) || [];
+  if(!toks.length) return null;
+  const mins = toks.map(t => {
+    const m = t.match(/(\d+)h(\d{2})?/);
+    return parseInt(m[1],10)*60 + (m[2] ? parseInt(m[2],10) : 0);
+  });
+  return [Math.min(...mins), Math.max(...mins)];
+}
+
+function formatDureeRange(range){
+  const [lo, hi] = range;
+  if(lo === hi) return formatDuration(lo);
+  return `${formatDuration(lo)}-${formatDuration(hi)}`;
+}
+
 function parsePrix(str){
   if(!str) return null;
   const m = str.match(/([\d,]+)\s*€/);
@@ -543,6 +567,19 @@ function cardHTML(r){
   const secTrOpen = openStates[r.id+'-sec-transport'] !== false;
   const secRfOpen = openStates[r.id+'-sec-refuge'] !== false;
 
+  // Résumé Itinéraire : distance totale + temps de marche total (J1+J2)
+  const j1km = parseKm(r.j1.km), j2km = parseKm(r.j2.km);
+  const totalKm = (j1km!==null && j2km!==null) ? (j1km + j2km) : null;
+  const j1Duree = parseDureeRange(r.j1.duree), j2Duree = parseDureeRange(r.j2.duree);
+  const totalDureeRange = (j1Duree && j2Duree) ? [j1Duree[0]+j2Duree[0], j1Duree[1]+j2Duree[1]] : null;
+  const itineraireSummaryBits = [];
+  if(totalKm!==null) itineraireSummaryBits.push(`📏 ${Number.isInteger(totalKm) ? totalKm : totalKm.toFixed(1)} km`);
+  if(totalDureeRange) itineraireSummaryBits.push(`⏱ ${formatDureeRange(totalDureeRange)}`);
+  const itineraireSummary = itineraireSummaryBits.length ? `<span class="section-summary">${itineraireSummaryBits.join(' · ')}</span>` : '';
+
+  // Résumé Refuge : prix total (demi-pension)
+  const refugeSummary = (r.prixLabel && parsePrix(r.prixLabel)!==null) ? `<span class="section-summary">💶 ${r.prixLabel}</span>` : '';
+
   const allerDurMin = parseDureeStr(r.aller.dureeTotale);
   const retourDurMin = parseDureeStr(r.retour.dureeTotale);
   const combinedDur = (allerDurMin!==null && retourDurMin!==null) ? allerDurMin + retourDurMin : null;
@@ -567,6 +604,7 @@ function cardHTML(r){
       <div class="section-head" onclick="toggleSection('${r.id}-sec-itineraire')" style="cursor:pointer;">
         <span class="section-icon">↝</span>
         <span class="section-label">Itinéraire</span>
+        ${itineraireSummary}
         <span class="section-chevron">${secItOpen ? '▾' : '▸'}</span>
       </div>
       <div class="section-body" style="${secItOpen ? '' : 'display:none;'}">
@@ -639,6 +677,7 @@ function cardHTML(r){
       <div class="section-head" onclick="toggleSection('${r.id}-sec-refuge')" style="cursor:pointer;">
         <span class="section-icon">🏔</span>
         <span class="section-label">Refuge</span>
+        ${refugeSummary}
         <span class="section-chevron">${secRfOpen ? '▾' : '▸'}</span>
       </div>
       <div class="section-body" style="${secRfOpen ? '' : 'display:none;'}">
