@@ -14,17 +14,15 @@
     --ink-soft: #5A645D;
     --line: #D8D6CB;
 
-    /* Une seule couleur d'accent, pas de code couleur par massif/section */
+    /* Structure unifiée : une seule couleur pour tout le fonctionnel (CTA, sections) */
     --accent: #2F4A3D;
     --accent-soft: #E7EBE4;
     --accent-line: #C9D2C4;
 
-    --vercors: var(--accent);
-    --vercors-soft: var(--accent-soft);
-    --belledonne: var(--accent);
-    --belledonne-soft: var(--accent-soft);
-    --oisans: var(--accent);
-    --oisans-soft: var(--accent-soft);
+    /* Repère massif : réservé au petit point + liseré de carte, pas aux badges/fonds */
+    --vercors: #1E7A4C;
+    --belledonne: #6D4AA8;
+    --oisans: #B8631E;
 
     --sec-itineraire: var(--accent);
     --sec-itineraire-soft: var(--accent-soft);
@@ -120,13 +118,13 @@
 
   .card-head{padding:22px 24px 16px;}
   .massif-badge{
-    display:inline-flex; align-items:center; gap:6px;
+    display:inline-flex; align-items:center; gap:7px;
     font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:600;
     text-transform:uppercase; letter-spacing:0.06em;
-    background:var(--massif-soft); color:var(--massif-color);
-    padding:5px 11px; border-radius:20px; margin-bottom:12px;
+    background:var(--accent-soft); color:var(--ink-soft);
+    border-left:3px solid var(--massif-color);
+    padding:5px 11px 5px 9px; border-radius:3px; margin-bottom:12px;
   }
-  .massif-badge::before{content:"⛰"; font-size:11px;}
   .card-title{
     font-family:'Fraunces', serif; font-weight:700; font-size:24px;
     color:var(--ink); margin:0 0 4px; line-height:1.15;
@@ -419,9 +417,9 @@ function fmtDate(iso){
 
 
 const MASSIF_COLORS = {
-  'Vercors': {color:'var(--vercors)', soft:'var(--vercors-soft)'},
-  'Belledonne': {color:'var(--belledonne)', soft:'var(--belledonne-soft)'},
-  'Écrins/Oisans': {color:'var(--oisans)', soft:'var(--oisans-soft)'},
+  'Vercors': {color:'var(--vercors)'},
+  'Belledonne': {color:'var(--belledonne)'},
+  'Écrins/Oisans': {color:'var(--oisans)'},
 };
 
 let openStates = {};
@@ -528,7 +526,7 @@ function cardHTML(r){
   const transportSummary = transportSummaryBits.length ? `<span class="section-summary">${transportSummaryBits.join(' · ')}</span>` : '';
 
   return `
-  <div class="card" style="--massif-color:${mc.color}; --massif-soft:${mc.soft};">
+  <div class="card" style="--massif-color:${mc.color};">
     <div class="card-head">
       <span class="massif-badge">${r.massif}</span>
       <h3 class="card-title">${r.titreRando}</h3>
