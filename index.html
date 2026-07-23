@@ -14,20 +14,20 @@
     --ink-soft: #5A645D;
     --line: #D8D6CB;
 
-    /* Structure unifiée : une seule couleur pour tout le fonctionnel (CTA, sections) */
-    --accent: #2F4A3D;
-    --accent-soft: #E7EBE4;
-    --accent-line: #C9D2C4;
+    /* Accent fonctionnel : CTA, liens, infos à mettre en avant */
+    --accent: #D9720B;
+    --accent-soft: #FBE8D3;
+    --accent-line: #F0C99A;
 
-    /* Repère massif : réservé au petit point + liseré de carte, pas aux badges/fonds */
+    /* Repère massif : identité visuelle de la carte (bandeau, badge) */
     --vercors: #1E7A4C;
     --belledonne: #6D4AA8;
-    --oisans: #B8631E;
+    --oisans: #2E6B8C;
 
-    /* Couleurs fonctionnelles pour les données clés, indépendantes du massif */
+    /* Couleurs fonctionnelles pour les données clés */
     --data-plus: #3A7D44;
     --data-minus: #A5472A;
-    --data-price: #8A5A1E;
+    --data-price: var(--accent);
 
     --sec-itineraire: var(--accent);
     --sec-itineraire-soft: var(--accent-soft);
@@ -116,7 +116,7 @@
     border-radius:18px;
     box-shadow:var(--shadow);
     overflow:hidden;
-    border-top:8px solid var(--massif-color);
+    border-top:1px solid var(--line);
     transition:box-shadow .2s ease;
   }
   .card:hover{box-shadow:var(--shadow-hover);}
