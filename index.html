@@ -42,7 +42,7 @@
   }
 
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
+  html,body{margin:0;padding:0; overflow-x:hidden;}
   body{
     background:var(--bg);
     background-image:
@@ -67,17 +67,15 @@
     font-family:'Fraunces', serif; font-weight:700; font-size:22px; color:var(--ink);
     letter-spacing:-0.01em;
   }
-  .site-nav{display:flex; gap:10px;}
-  .nav-btn{
-    display:inline-flex; align-items:center; gap:6px;
-    font-family:'Space Mono', monospace; font-size:13px; font-weight:700;
-    color:var(--ink); text-decoration:none; cursor:pointer;
-    border:1.5px dashed var(--ink); background:var(--card);
-    padding:8px 16px; border-radius:9px;
-    transition:background .15s ease, transform .15s ease;
+  .site-nav{display:flex; gap:24px;}
+  .nav-link{
+    font-family:'Space Mono', monospace; font-size:13.5px; font-weight:600;
+    color:var(--ink-soft); text-decoration:none;
+    padding-bottom:3px; border-bottom:2px solid transparent;
+    transition:color .15s ease, border-color .15s ease;
   }
-  .nav-btn:hover{background:var(--accent-soft); transform:translateY(-1px);}
-  .nav-btn.active{background:var(--accent); border-style:solid; border-color:var(--accent-line);}
+  .nav-link:hover{color:var(--ink);}
+  .nav-link.active{color:var(--ink); font-weight:700; border-bottom-color:var(--accent);}
   h1{
     font-family:'Fraunces', serif; font-weight:700; font-optical-sizing:auto;
     font-size:clamp(34px, 5vw, 56px); line-height:1.03; margin:0 0 16px;
@@ -283,6 +281,8 @@
 
   @media (max-width:640px){
     .day-stats{grid-template-columns:1fr;}
+    .grid{grid-template-columns:1fr;}
+    .site-header{margin:0 -24px 28px; padding:16px 20px;}
   }
 </style>
 </head>
@@ -293,8 +293,8 @@
   <header class="site-header">
     <div class="site-title">Rando piou piou</div>
     <nav class="site-nav">
-      <a class="nav-btn active" href="index.html">🥾 Itinéraire</a>
-      <a class="nav-btn" href="materiel.html">🎒 Valise</a>
+      <a class="nav-link active" href="index.html">Itinéraire</a>
+      <a class="nav-link" href="materiel.html">Valise</a>
     </nav>
   </header>
 
