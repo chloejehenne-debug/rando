@@ -5,49 +5,67 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Matériel pour 2 jours en refuge</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Karla:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #EFEEE7;
-    --card: #FFFFFF;
-    --ink: #1C2420;
-    --ink-soft: #5A645D;
-    --line: #D8D6CB;
-    --accent: #D9720B;
-    --accent-soft: #FBE8D3;
-    --accent-line: #F0C99A;
-    --done: #3A7D44;
-    --shadow: 0 1px 3px rgba(26,36,32,0.06);
+    --bg: #F3ECDC;
+    --card: #FBF7EC;
+    --ink: #2B2118;
+    --ink-soft: #6B5D4F;
+    --line: #E3D6BA;
+    --accent: #FDD835;
+    --accent-soft: #FCF3C6;
+    --accent-line: #F0DE8A;
+    --stamp-a: #C2185B;
+    --stamp-b: #8E24AA;
+    --shadow: 0 2px 8px rgba(43,33,24,0.08);
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background:var(--bg); color:var(--ink);
-    font-family:'Work Sans', sans-serif; line-height:1.5;
+    background:var(--bg);
+    background-image:radial-gradient(rgba(43,33,24,0.035) 1px, transparent 1px);
+    background-size:3px 3px;
+    color:var(--ink);
+    font-family:'Karla', sans-serif; line-height:1.5;
     -webkit-font-smoothing:antialiased;
   }
   .wrap{max-width:920px; margin:0 auto; padding:0 24px 90px;}
 
-  header{padding:44px 0 8px;}
-  .back-link{
-    font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--ink-soft);
-    text-decoration:none; display:inline-flex; align-items:center; gap:6px; margin-bottom:18px;
+  .site-header{
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;
+    padding:28px 0 8px;
   }
-  .back-link:hover{color:var(--accent);}
+  .site-title{
+    font-family:'Fraunces', serif; font-weight:700; font-size:22px; color:var(--ink);
+    letter-spacing:-0.01em;
+  }
+  .site-nav{display:flex; gap:10px;}
+  .nav-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'Space Mono', monospace; font-size:13px; font-weight:700;
+    color:var(--ink); text-decoration:none; cursor:pointer;
+    border:1.5px dashed var(--ink); background:var(--card);
+    padding:8px 16px; border-radius:9px;
+    transition:background .15s ease, transform .15s ease;
+  }
+  .nav-btn:hover{background:var(--accent-soft); transform:translateY(-1px);}
+  .nav-btn.active{background:var(--accent); border-style:solid; border-color:var(--accent-line);}
+
   h1{
-    font-family:'Fraunces', serif; font-weight:700; font-size:clamp(30px,4.5vw,44px);
-    line-height:1.05; margin:0 0 12px; letter-spacing:-0.01em;
+    font-family:'Fraunces', serif; font-weight:700; font-size:clamp(28px,4.2vw,40px);
+    line-height:1.08; margin:24px 0 10px; letter-spacing:-0.01em;
   }
   .subhead{color:var(--ink-soft); font-size:16px; max-width:640px; margin:0 0 8px;}
 
-  .grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:20px; margin-top:8px;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:20px; margin-top:20px;}
 
   .cat{
     background:var(--card); border:1px solid var(--line); border-radius:14px;
     overflow:hidden; box-shadow:var(--shadow);
   }
   .cat-head{
-    padding:14px 18px; border-bottom:1px solid var(--line);
+    padding:14px 18px; border-bottom:1.5px dashed var(--line);
     display:flex; align-items:center; gap:10px;
   }
   .cat-icon{font-size:18px;}
@@ -61,12 +79,12 @@
   }
   .item:last-child{border-bottom:none;}
   .item-note{
-    display:block; font-size:12px; color:var(--accent); margin-top:2px; font-weight:500;
+    display:block; font-size:12px; color:var(--stamp-a); margin-top:2px; font-weight:600;
   }
 
   footer{
-    margin-top:48px; padding-top:20px; border-top:1px solid var(--line);
-    font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--ink-soft);
+    margin-top:48px; padding-top:20px; border-top:2px dashed var(--line);
+    font-family:'Space Mono', monospace; font-size:11.5px; color:var(--ink-soft);
   }
 
   @media (max-width:600px){
@@ -77,11 +95,15 @@
 <body>
 
 <div class="wrap">
-  <header>
-    <a class="back-link" href="index.html">← Retour aux itinéraires</a>
-    <h1>Matériel pour un week-end de 2 jours en refuge</h1>
-    <p class="subhead">Liste pensée pour une nuitée en refuge gardé, montagne d'été.</p>
+  <header class="site-header">
+    <div class="site-title">Rando piou piou</div>
+    <nav class="site-nav">
+      <button class="nav-btn" onclick="window.location.href='index.html'">🥾 Itinéraire</button>
+      <button class="nav-btn active" onclick="window.location.href='materiel.html'">🎒 Valise</button>
+    </nav>
   </header>
+  <h1>Matériel pour un week-end de 2 jours en refuge</h1>
+  <p class="subhead">Liste pensée pour une nuitée en refuge gardé, montagne d'été.</p>
 
   <div class="grid" id="grid"></div>
 
@@ -90,91 +112,58 @@
   </footer>
 </div>
 
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-const CATEGORIES = [
-  {
-    title: 'Porté sur soi', icon: '🥾',
-    items: [
-      'Chaussures de rando (rodées)',
-      'Chaussettes techniques',
-      'Pantalon ou short',
-      'T-shirt technique',
-      'Casquette ou chapeau',
-      'Lunettes de soleil',
-    ]
-  },
-  {
-    title: 'Dans le sac', icon: '🎒',
-    items: [
-      'Polaire ou doudoune',
-      'Veste imperméable',
-      'Pantalon de pluie',
-      'Vêtements de rechange (soirée)',
-      'Sous-vêtements et chaussettes de rechange',
-      'Bonnet',
-    ]
-  },
-  {
-    title: 'Nuit au refuge', icon: '🏔',
-    items: [
-      { label: 'Drap de sac', note: 'souvent obligatoire' },
-      'Boules Quies',
-      'Lampe frontale + piles',
-      'Trousse de toilette',
-      { label: 'Espèces', note: 'cash only parfois' },
-    ]
-  },
-  {
-    title: 'Eau & nourriture', icon: '💧',
-    items: [
-      'Gourde (1,5 L min.)',
-      'Pastilles/filtre de purification',
-      'Barres énergétiques',
-      'Pique-nique du trajet',
-    ]
-  },
-  {
-    title: 'Sécurité & navigation', icon: '🧭',
-    items: [
-      'Trousse de secours',
-      'Carte IGN ou GPX hors-ligne',
-      'Téléphone chargé + batterie externe',
-      'Sifflet',
-      'Couverture de survie',
-      'Crème solaire',
-    ]
-  },
-  {
-    title: 'Divers', icon: '🧰',
-    items: [
-      'Bâtons de marche',
-      'Sacs déchets',
-      'Carte d\'identité',
-      'Billet de bus/train',
-    ]
-  },
-];
+// ============================================
+// Connexion Supabase — mêmes identifiants que index.html
+// ============================================
+const SUPABASE_URL = 'https://xomfsciqbljjfzrzjilz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhvbWZzY2lxYmxqamZ6cnpqaWx6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1NDE5NTcsImV4cCI6MjEwMDExNzk1N30.rNuei181sRq96a_nAtaK_UOHpmE1sHNSSCW_29KaPXE';
 
-function render(){
+if(!window.supabase){
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('grid').innerHTML = '<p style="font-family:\'IBM Plex Mono\',monospace;color:#A5472A;padding:40px 0;">Le script Supabase (CDN) n\'a pas pu se charger.</p>';
+  });
+  throw new Error('window.supabase indisponible');
+}
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+async function loadMateriel(){
   const grid = document.getElementById('grid');
-  grid.innerHTML = CATEGORIES.map(cat => `
-    <div class="cat">
-      <div class="cat-head">
-        <span class="cat-icon">${cat.icon}</span>
-        <span class="cat-title">${cat.title}</span>
+  grid.innerHTML = '<p style="font-family:\'IBM Plex Mono\',monospace;color:var(--ink-soft);padding:40px 0;">Chargement…</p>';
+
+  try {
+    const [catsRes, itemsRes] = await Promise.all([
+      supabaseClient.from('materiel_categories').select('*').order('ordre'),
+      supabaseClient.from('materiel_items').select('*').order('ordre'),
+    ]);
+
+    if(catsRes.error) throw catsRes.error;
+    if(itemsRes.error) throw itemsRes.error;
+
+    const cats = catsRes.data || [];
+    const items = itemsRes.data || [];
+
+    grid.innerHTML = cats.map(cat => `
+      <div class="cat">
+        <div class="cat-head">
+          <span class="cat-icon">${cat.icone}</span>
+          <span class="cat-title">${cat.titre}</span>
+        </div>
+        <ul class="cat-list">
+          ${items.filter(it => it.categorie_id === cat.id).map(it => `
+            <li class="item">${it.label}${it.note ? `<span class="item-note">${it.note}</span>` : ''}</li>
+          `).join('')}
+        </ul>
       </div>
-      <ul class="cat-list">
-        ${cat.items.map(it => {
-          const label = typeof it === 'string' ? it : it.label;
-          const note = typeof it === 'string' ? null : it.note;
-          return `<li class="item">${label}${note ? `<span class="item-note">${note}</span>` : ''}</li>`;
-        }).join('')}
-      </ul>
-    </div>
-  `).join('');
+    `).join('');
+  } catch(err){
+    grid.innerHTML = `<p style="font-family:'IBM Plex Mono',monospace;color:#A5472A;padding:40px 0;">Erreur de chargement : ${err.message || err}<br>Vérifie que les tables materiel_categories et materiel_items existent.</p>`;
+    console.error(err);
+  }
 }
 
-render();
+loadMateriel();
 </script>
 
 </body>
