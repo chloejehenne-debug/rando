@@ -431,7 +431,10 @@ const MASSIF_COLORS = {
   'Vercors': {color:'var(--vercors)'},
   'Belledonne': {color:'var(--belledonne)'},
   'Écrins/Oisans': {color:'var(--oisans)'},
+  'Mont-Blanc': {color:'#3E6B8C'},
+  'Vanoise': {color:'#8C4E6B'},
 };
+const DEFAULT_MASSIF_COLOR = {color:'var(--ink-soft)'};
 
 let openStates = {};
 
@@ -558,7 +561,7 @@ function toggleSection(key){
 }
 
 function cardHTML(r){
-  const mc = MASSIF_COLORS[r.massif];
+  const mc = MASSIF_COLORS[r.massif] || DEFAULT_MASSIF_COLOR;
   const itOpen = openStates[r.id+'-itineraire'] !== false;
   const alOpen = openStates[r.id+'-aller'] !== false;
   const reOpen = openStates[r.id+'-retour'] !== false;
