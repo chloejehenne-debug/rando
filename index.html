@@ -53,6 +53,14 @@
   .wrap{max-width:1200px; margin:0 auto; padding:0 24px 90px;}
 
   header{padding:52px 0 30px;}
+  .materiel-link{
+    display:inline-flex; align-items:center; gap:6px; margin-top:14px;
+    font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600;
+    color:var(--accent); text-decoration:none;
+    border:1px solid var(--accent-line); background:var(--accent-soft);
+    padding:8px 14px; border-radius:9px;
+  }
+  .materiel-link:hover{background:var(--accent); color:#fff;}
   .eyebrow{
     font-family:'IBM Plex Mono', monospace;
     font-size:12.5px; letter-spacing:0.12em; text-transform:uppercase;
@@ -282,6 +290,7 @@
 
   <header>
     <h1>Rando piou piou</h1>
+    <a href="materiel.html" class="materiel-link">🎒 Matériel pour 2 jours en refuge</a>
   </header>
 
   <div class="filters" id="filters" style="display:none;">
